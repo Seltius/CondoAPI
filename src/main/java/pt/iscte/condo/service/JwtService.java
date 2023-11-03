@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class JwtService {
 
     //TODO PUT THIS KEY IN A PROPERTY
-    private static final String SECRET_KEY = "676aa565d6b2e1c306c078963d77c7361a1c8aa295dfbd1e4113728572d6c85dc93f138da76829d49ac3d31a38fa5a9d16160edea215845762a2ab2bcbc7ac18";
+    private static final String SECRET_KEY = "PiOiQOf8c0AI1HRFzEJLiNyHcUSQvfK665syoR0PuOFIf63o";
 
     public String getUsername(String token) {
         return getClaim(token, Claims::getSubject);
@@ -64,7 +64,7 @@ public class JwtService {
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 
