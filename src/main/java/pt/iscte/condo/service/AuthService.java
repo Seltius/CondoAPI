@@ -48,7 +48,8 @@ public class AuthService {
         return getAuthenticationResponse(jwtService.generateToken(user));
     }
 
-    public ValidateTokenResponse validate(String token) {
+    public ValidateTokenResponse validate(String bearer) {
+        String token = bearer.substring(7);
         String email = jwtService.getUsername(token);
 
         if (email == null || email.isEmpty()) {

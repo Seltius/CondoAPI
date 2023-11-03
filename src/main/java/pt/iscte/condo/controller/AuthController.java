@@ -27,7 +27,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    @PostMapping("/validate") //TODO ENDPOINT REQUER AUTENTICAÇÃO
+    @GetMapping("/validate") //TODO ENDPOINT REQUER AUTENTICAÇÃO
     public ResponseEntity<ValidateTokenResponse> validate(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authService.validate(token));
     }
