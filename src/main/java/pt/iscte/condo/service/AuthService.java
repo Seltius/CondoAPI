@@ -10,8 +10,8 @@ import pt.iscte.condo.controller.request.AuthenticationRequest;
 import pt.iscte.condo.controller.request.RegisterRequest;
 import pt.iscte.condo.controller.response.AuthenticationResponse;
 import pt.iscte.condo.controller.response.ValidateTokenResponse;
-import pt.iscte.condo.model.Role;
-import pt.iscte.condo.model.User;
+import pt.iscte.condo.domain.Role;
+import pt.iscte.condo.domain.User;
 import pt.iscte.condo.repository.UserRepository;
 
 @Service

@@ -1,4 +1,4 @@
-package pt.iscte.condo.model;
+package pt.iscte.condo.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
