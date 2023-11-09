@@ -17,6 +17,7 @@ import pt.iscte.condo.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    //TODO ADD ROLE TO USERS WHEN THEY ARE CREATED
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
