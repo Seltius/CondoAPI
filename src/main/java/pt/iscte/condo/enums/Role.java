@@ -1,4 +1,4 @@
-package pt.iscte.condo.domain;
+package pt.iscte.condo.enums;
 
 public enum Role {
 
