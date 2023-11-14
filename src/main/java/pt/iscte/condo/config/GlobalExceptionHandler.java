@@ -1,5 +1,6 @@
 package pt.iscte.condo.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -45,7 +46,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<?> handleBusinessException(PSQLException ex) {
-        return new ResponseEntity<>("Database error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>("Database error", HttpStatus.INTERNAL_SERVER_ERROR);//TODO
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleBusinessException(EntityNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); //TODO
     }
 
 }

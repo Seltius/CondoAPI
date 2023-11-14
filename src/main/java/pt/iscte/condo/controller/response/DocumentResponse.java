@@ -16,10 +16,10 @@ public class DocumentResponse {
 
     private Integer id;
     private String name;
-    private DocumentType documentType;
+    private DocumentType type;
     private LocalDateTime uploadDate;
-    private String ownerName;
-    private String uploaderName;
-    private Byte[] fileData;
+    private String owner;
+    private String uploader;
+    private String fileData; //byte[] in Base64
 
 }

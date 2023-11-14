@@ -11,6 +11,6 @@ public interface DocumentService {
 
     DocumentResponse getDocument(Integer id);
 
-    List<DocumentResponse> getDocuments(Integer userId);
+    List<DocumentResponse> getDocuments();
 
 }

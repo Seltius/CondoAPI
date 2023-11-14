@@ -30,10 +30,10 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.getDocument(id));
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/all")
     @PreAuthorize("#id == authentication.principal.id")
-    public ResponseEntity<List<DocumentResponse>> getDocuments(@PathVariable Integer id) {
-        return ResponseEntity.ok(documentService.getDocuments(id));
+    public ResponseEntity<List<DocumentResponse>> getDocuments() {
+        return ResponseEntity.ok(documentService.getDocuments());
     }
 
 }

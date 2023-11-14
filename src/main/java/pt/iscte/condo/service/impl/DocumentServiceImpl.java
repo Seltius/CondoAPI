@@ -2,6 +2,7 @@ package pt.iscte.condo.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +17,7 @@ import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.DocumentService;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -25,19 +27,23 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final DocumentMapper documentMapper;
-    private final HttpServletRequest request;
+    private final HttpServletRequest httpRequest;
     private final JwtServiceImpl jwtService;
 
     @Override
-    public void uploadDocument(DocumentRequest documentRequest) {
+    public void uploadDocument(DocumentRequest request) {
+        String fileData = request.getFileData();
 
-        User owner =  userRepository.findById(documentRequest.getOwnerId())
+        if (!isPdfFile(fileData)) {
+            throw new BusinessException("fileType not allowed (only pdf)");
+        }
+
+        User owner =  userRepository.findById(request.getOwnerId())
                 .orElseThrow(() -> new BusinessException("User does not exist"));
 
-        User uploader = userRepository.findByEmail(jwtService.getUsername(getBearer(request)))
-                .orElseThrow(() -> new BusinessException("User does not exist"));
+        User uploader = getUserFromBearer(getBearer(httpRequest));
 
-        Document document = documentMapper.documentRequestToDocument(documentRequest);
+        Document document = documentMapper.documentRequestToDocument(request);
 
         document.setOwner(owner);
         document.setUploader(uploader);
@@ -50,21 +56,23 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentResponse getDocument(Integer id) {
 
-        //TODO
-        // logic to get a single document
-        // convert Document to DocumentResponse
+        //TODO ONLY ALLOW DOWNLOAD IF IT'S FROM THE OWNER OR UPLOADER
 
-        return null;
+        Document document = documentRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Document not found"));
+
+        return documentMapper.documentToDocumentResponse(document);
     }
 
     @Override
-    public List<DocumentResponse> getDocuments(Integer userId) {
+    public List<DocumentResponse> getDocuments() {
 
-        //TODO
-        // logic to get multiple documents
-        // convert each Document to DocumentResponse
+        User owner = getUserFromBearer(getBearer(httpRequest));
 
-        return null;
+        List<Document> documentList = documentRepository.findAllByOwnerId(owner.getId())
+                .orElseThrow(() -> new RuntimeException("No documents found"));
+
+        return documentMapper.documentListToDocumentListResponse(documentList);
     }
 
     private String getBearer(HttpServletRequest request) {
@@ -78,6 +86,18 @@ public class DocumentServiceImpl implements DocumentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
         }
 
+    }
+
+    private User getUserFromBearer(String token) {
+        return userRepository.findByEmail(jwtService.getUsername(token))
+                .orElseThrow(() -> new BusinessException("User does not exist"));
+    }
+
+    private boolean isPdfFile(String base64File) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64File);
+        Tika tika = new Tika();
+        String fileType = tika.detect(decodedBytes);
+        return fileType.equals("application/pdf");
     }
 
 

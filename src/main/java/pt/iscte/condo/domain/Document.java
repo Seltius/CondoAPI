@@ -33,7 +33,6 @@ public class Document {
     @ManyToOne
     private User uploader;
 
-    @Lob
     private byte[] fileData;
 
 }
