@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pt.iscte.condo.enums.DocumentType;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -25,7 +25,7 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentType type;
 
-    private LocalDate uploadDate;
+    private LocalDateTime uploadDate;
 
     @ManyToOne
     private User owner;

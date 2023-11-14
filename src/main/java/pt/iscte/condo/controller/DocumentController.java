@@ -20,7 +20,8 @@ public class DocumentController {
     @PostMapping("/upload")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> uploadDocument(@RequestBody DocumentRequest request) {
-        return ResponseEntity.ok(documentService.uploadDocument(request));
+        documentService.uploadDocument(request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
@@ -29,7 +30,7 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.getDocument(id));
     }
 
-    @GetMapping()
+    @GetMapping("/user/{id}")
     @PreAuthorize("#id == authentication.principal.id")
     public ResponseEntity<List<DocumentResponse>> getDocuments(@PathVariable Integer id) {
         return ResponseEntity.ok(documentService.getDocuments(id));

@@ -1,5 +1,6 @@
 package pt.iscte.condo.config;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -39,12 +40,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<?> handleBusinessException(BusinessException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleAllOtherExceptions() {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(PSQLException.class)
+    public ResponseEntity<?> handleBusinessException(PSQLException ex) {
+        return new ResponseEntity<>("Database error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

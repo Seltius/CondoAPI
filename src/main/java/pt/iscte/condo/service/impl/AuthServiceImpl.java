@@ -18,7 +18,6 @@ import pt.iscte.condo.service.AuthService;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    //TODO ADD ROLE TO USERS WHEN THEY ARE CREATED
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

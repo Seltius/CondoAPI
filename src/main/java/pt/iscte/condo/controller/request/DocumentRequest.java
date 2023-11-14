@@ -1,5 +1,6 @@
 package pt.iscte.condo.controller.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,16 @@ import pt.iscte.condo.enums.DocumentType;
 @NoArgsConstructor
 public class DocumentRequest {
 
+    @NotBlank(message = "name is mandatory")
     private String name;
+
+    @NotBlank(message = "type is mandatory")
     private DocumentType type;
+
+    @NotBlank(message = "ownerId is mandatory")
     private Integer ownerId;
-    private Integer uploaderId;
-    private String fileData; // TODO Base64 encoded string (TO NOT FORGET)
+
+    @NotBlank(message = "fileData is mandatory")
+    private String fileData; //base64
 
 }
