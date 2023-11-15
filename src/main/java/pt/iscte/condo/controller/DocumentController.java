@@ -11,27 +11,24 @@ import pt.iscte.condo.service.DocumentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/document")
+@RequestMapping("/api/v1/documents")
 @RequiredArgsConstructor
 public class DocumentController {
 
     private final DocumentService documentService;
 
     @PostMapping("/upload")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> uploadDocument(@RequestBody DocumentRequest request) {
         documentService.uploadDocument(request);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("#id == authentication.principal.id")
     public ResponseEntity<DocumentResponse> getDocument(@PathVariable Integer id) {
         return ResponseEntity.ok(documentService.getDocument(id));
     }
 
-    @GetMapping("/all")
-    @PreAuthorize("#id == authentication.principal.id")
+    @GetMapping()
     public ResponseEntity<List<DocumentResponse>> getDocuments() {
         return ResponseEntity.ok(documentService.getDocuments());
     }

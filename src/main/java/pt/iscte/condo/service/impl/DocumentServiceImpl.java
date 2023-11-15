@@ -39,7 +39,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         User owner =  userRepository.findById(request.getOwnerId())
-                .orElseThrow(() -> new BusinessException("User does not exist"));
+                .orElseThrow(() -> new BusinessException("User does not exist")); //TODO NOT WORKING (FIX ME)
 
         User uploader = getUserFromBearer(getBearer(httpRequest));
 

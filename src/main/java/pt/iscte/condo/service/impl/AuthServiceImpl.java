@@ -38,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        //TODO FIX ME (CAPS LOCK EMAIL NOT MATCHING)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
