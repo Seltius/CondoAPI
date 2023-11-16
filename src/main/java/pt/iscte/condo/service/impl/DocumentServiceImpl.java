@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pt.iscte.condo.controller.request.DocumentRequest;
 import pt.iscte.condo.controller.response.DocumentResponse;
+import pt.iscte.condo.controller.response.FileResponse;
 import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.exceptions.BusinessException;
@@ -54,7 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentResponse getDocument(Integer id) {
+    public FileResponse getDocument(Integer id) {
 
         //TODO ONLY ALLOW DOWNLOAD IF IT'S FROM THE OWNER OR UPLOADER
 
@@ -72,7 +73,7 @@ public class DocumentServiceImpl implements DocumentService {
         List<Document> documentList = documentRepository.findAllByOwnerId(owner.getId())
                 .orElseThrow(() -> new RuntimeException("No documents found"));
 
-        return documentMapper.documentListToDocumentListResponse(documentList);
+        return documentMapper.documentListToDocumentsListResponse(documentList);
     }
 
     private String getBearer(HttpServletRequest request) {

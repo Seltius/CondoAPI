@@ -3,6 +3,7 @@ package pt.iscte.condo.mapper;
 import org.mapstruct.Mapper;
 import pt.iscte.condo.controller.request.DocumentRequest;
 import pt.iscte.condo.controller.response.DocumentResponse;
+import pt.iscte.condo.controller.response.FileResponse;
 import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.User;
 
@@ -14,9 +15,9 @@ public abstract class DocumentMapper {
 
     public abstract Document documentRequestToDocument(DocumentRequest documentRequest);
 
-    public abstract DocumentResponse documentToDocumentResponse(Document document);
+    public abstract FileResponse documentToDocumentResponse(Document document);
 
-    public abstract List<DocumentResponse> documentListToDocumentListResponse(List<Document> documentList);
+    public abstract List<DocumentResponse> documentListToDocumentsListResponse(List<Document> documentList);
 
     protected String userToUserName(User user) {
         return user.getFirstName() + " " + user.getLastName();
