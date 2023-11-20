@@ -1,0 +1,117 @@
+Table Condominium {
+  id int [pk, increment]
+  name varchar
+  address varchar
+}
+
+Table User {
+  id int [pk, increment]
+  first_name varchar
+  last_name varchar
+  password varchar
+  email varchar [unique]
+  role varchar
+}
+
+Table CondominiumUser {
+  condominium_id int [ref: > Condominium.id]
+  user_id int [ref: > User.id]
+  apartment_id int [ref: > Apartment.id]
+  Primary Key (condominium_id, user_id)
+}
+
+Table Apartment {
+  id int [pk, increment]
+  fraction varchar
+  condominium_id int [ref: > Condominium.id]
+}
+
+Table Document {
+  id int [pk, increment]
+  file_data oid
+  name varchar
+  upload_date timestamp
+  type_id int [ref: > DocumentType.id]
+  user_id int [ref: > User.id]
+  uploader_id int [ref: > User.id]
+  condominium_id int [ref: > Condominium.id]
+}
+
+Table DocumentType {
+  id int [pk, increment]
+  type varchar
+}
+
+Table Payment {
+  id int [pk, increment]
+  amount decimal
+  payment_date timestamp
+  payment_type_id int [ref: > PaymentType.id]
+  user_id int [ref: > User.id]
+  condominium_id int [ref: > Condominium.id]
+}
+
+Table PaymentType {
+  id int [pk, increment]
+  type varchar // CONDOMINIUM / BILLS / ASSESMENT / PENALTIES
+}
+
+Table Anomaly {
+  id int [pk, increment]
+  description text
+  report_date timestamp
+  status_id int [ref: > AnomalyStatus.id]
+  user_id int [ref: > User.id]
+  condominium_id int [ref: > Condominium.id]
+}
+
+Table AnomalyStatus {
+  id int [pk, increment]
+  status varchar // REPORTED/IN-PROGRESS/RESOLVED
+}
+
+Table Meeting {
+  id int [pk, increment]
+  meeting_date timestamp
+  location varchar
+  condominium_id int [ref: > Condominium.id]
+  zoom_link varchar
+  zoom_meeting_id varchar
+  zoom_password varchar
+}
+
+Table MeetingTranscript {
+  id int [pk, increment]
+  transcript text
+  meeting_id int [ref: > Meeting.id]
+}
+
+Table Vote {
+  id int [pk, increment]
+  question text
+  vote_date timestamp
+  condominium_id int [ref: > Condominium.id]
+}
+
+Table VoteOption {
+  id int [pk, increment]
+  response boolean
+  user_id int [ref: > User.id]
+  vote_id int [ref: > Vote.id]
+}
+
+Table ChatbotSession {
+  id int [pk, increment]
+  session_id varchar
+  start_time timestamp
+  end_time timestamp
+  user_id int [ref: > User.id]
+}
+
+Table ChatbotMessage {
+  id int [pk, increment]
+  message text
+  time timestamp
+  sender varchar
+  session_id int [ref: > ChatbotSession.id]
+}
