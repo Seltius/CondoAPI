@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<Document, Integer> {
 
-    Optional<List<Document>> findAllByOwnerId(Integer id);
+    Optional<List<Document>> findAllByUserId(Integer id);
 
 }

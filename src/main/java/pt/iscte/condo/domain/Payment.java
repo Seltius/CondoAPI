@@ -5,43 +5,37 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pt.iscte.condo.enums.DocumentType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class Document {
+public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
-    private String name;
+    private BigDecimal amount;
 
     @Column(nullable = false)
-    private LocalDateTime uploadDate;
+    private LocalDateTime paymentDate;
 
-    @Enumerated(EnumType.STRING) //TODO Create table for document types
-    private DocumentType type;
+    @ManyToOne
+    @JoinColumn(name = "payment_type_id", nullable = false)
+    private PaymentType paymentType;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "uploader_id", nullable = false)
-    private User uploader;
-
-    @ManyToOne
     @JoinColumn(name = "condominium_id", nullable = false)
     private Condominium condominium;
-
-    @Column(nullable = false)
-    private byte[] fileData;
 
 }

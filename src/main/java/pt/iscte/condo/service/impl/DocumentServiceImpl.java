@@ -46,7 +46,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found"));
 
         User user = getUserByBearer(getBearer(httpRequest));
-        if (!user.getId().equals(document.getOwner().getId()))
+        if (!user.getId().equals(document.getUser().getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
 
         return documentMapper.documentToDocumentResponse(document);
@@ -57,7 +57,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         User owner = getUserByBearer(getBearer(httpRequest));
 
-        List<Document> documentList = documentRepository.findAllByOwnerId(owner.getId())
+        List<Document> documentList = documentRepository.findAllByUserId(owner.getId())
                 .orElseThrow(() -> new RuntimeException("No documents found"));
 
         return documentMapper.documentListToDocumentsListResponse(documentList);
@@ -80,7 +80,7 @@ public class DocumentServiceImpl implements DocumentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         Document document = documentMapper.documentRequestToDocument(request);
-        document.setOwner(owner);
+        document.setUser(owner);
         document.setUploader(uploader);
         document.setUploadDate(LocalDateTime.now());
 
