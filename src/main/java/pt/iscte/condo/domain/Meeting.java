@@ -30,7 +30,7 @@ public class Meeting {
     private String description;
 
     @Column(nullable = false)
-    private LocalDateTime meetingDate;
+    private LocalDateTime date;
 
     private LocalDateTime startTime;
 

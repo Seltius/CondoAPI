@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pt.iscte.condo.domain.Meeting;
-import pt.iscte.condo.service.MeetingService;
+import pt.iscte.condo.service.ZoomService;
 
 import java.util.List;
 
@@ -13,24 +13,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MeetingController {
 
-    private final MeetingService meetingService;
+    private final ZoomService zoomService;
 
     @PostMapping
     public void createMeeting(@RequestBody Meeting meeting) { //todo create input object
         // todo call zoom api to create meeting
-        meetingService.createMeeting(meeting);
+        zoomService.createMeeting(meeting);
     }
 
     @GetMapping
     public ResponseEntity<List<Meeting>> getAllMeetings() { //todo create output object
-        return ResponseEntity.ok(meetingService.getAllMeetings());
+        return ResponseEntity.ok(zoomService.getAllMeetings());
     }
 
     @PostMapping("/{meetingId}/users")
     public void addUsersToMeeting(@PathVariable Integer meetingId, @RequestBody Integer userId) {
         //todo handle response
         // todo create input object with a list of User ids
-        meetingService.addUsersToMeeting(meetingId, userId);
+        zoomService.addUsersToMeeting(meetingId, userId);
     }
 
 }
