@@ -3,6 +3,8 @@ package pt.iscte.condo.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pt.iscte.condo.controller.request.AddUsersToMeetingRequest;
+import pt.iscte.condo.controller.request.CreateMeetingRequest;
 import pt.iscte.condo.domain.Meeting;
 import pt.iscte.condo.service.ZoomService;
 
@@ -16,9 +18,8 @@ public class MeetingController {
     private final ZoomService zoomService;
 
     @PostMapping
-    public void createMeeting(@RequestBody Meeting meeting) { //todo create input object
-        // todo call zoom api to create meeting
-        zoomService.createMeeting(meeting);
+    public void createMeeting(@RequestBody CreateMeetingRequest request) {
+        zoomService.createMeeting(request);
     }
 
     @GetMapping
@@ -27,10 +28,8 @@ public class MeetingController {
     }
 
     @PostMapping("/{meetingId}/users")
-    public void addUsersToMeeting(@PathVariable Integer meetingId, @RequestBody Integer userId) {
-        //todo handle response
-        // todo create input object with a list of User ids
-        zoomService.addUsersToMeeting(meetingId, userId);
+    public void addUsersToMeeting(@PathVariable Integer meetingId, @RequestBody AddUsersToMeetingRequest request) {
+        zoomService.addUsersToMeeting(request, meetingId);
     }
 
 }

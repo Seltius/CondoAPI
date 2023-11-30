@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AddUsersToMeetingRequest {
 
-    Integer meetingId;
     List<Integer> userIds;
 
 }

@@ -10,6 +10,6 @@ public interface ZoomService {
 
     void createMeeting(CreateMeetingRequest request);
     List<Meeting> getAllMeetings();
-    void addUsersToMeeting(AddUsersToMeetingRequest request);
+    void addUsersToMeeting(AddUsersToMeetingRequest request, Integer meetingId);
 
 }

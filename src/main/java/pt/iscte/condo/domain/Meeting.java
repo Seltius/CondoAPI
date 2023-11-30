@@ -38,7 +38,7 @@ public class Meeting {
 
     private String zoomLink;
 
-    private String zoomMeetingId;
+    private Long zoomMeetingId;
 
     private String zoomPassword;
 

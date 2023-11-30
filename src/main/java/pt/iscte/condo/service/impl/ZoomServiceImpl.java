@@ -1,20 +1,20 @@
 package pt.iscte.condo.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import pt.iscte.condo.config.TokenCacheConfig;
 import pt.iscte.condo.controller.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.request.CreateMeetingRequest;
 import pt.iscte.condo.domain.Meeting;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.proxy.ZoomAPI;
+import pt.iscte.condo.proxy.request.MeetingRequest;
 import pt.iscte.condo.repository.MeetingRepository;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.ZoomService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,17 +25,20 @@ public class ZoomServiceImpl implements ZoomService {
     private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
     private final ZoomAPI zoomAPI;
+    private final TokenCacheConfig tokenCacheConfig;
 
     @Override
     public void createMeeting(CreateMeetingRequest request) {
         List<User> users = userRepository.findAllById(request.getUserIds());
+        String token = tokenCacheConfig.getToken("zoomToken", tokenCacheConfig.tokenCache());
 
-        Map<String, Object> zoomRequest = new HashMap<>();
-        zoomRequest.put("topic", request.getTitle());
-        zoomRequest.put("start_time", request.getTitle());
-        zoomRequest.put("duration", request.getTitle());
+        MeetingRequest zoomRequest = MeetingRequest.builder()
+                .topic(request.getTitle())
+                .start_time(request.getDate())
+                .duration(request.getDuration())
+                .build();
 
-        Map<String, Object> response = zoomAPI.createMeeting("USER_ID", zoomRequest, token);
+        Map<String, Object> response = zoomAPI.createMeeting("joaodantas94@gmail.com", zoomRequest, "Bearer " + token); //todo remove hardcoded values
 
         Meeting meeting = Meeting.builder()
                 .title(request.getTitle())
@@ -45,19 +48,19 @@ public class ZoomServiceImpl implements ZoomService {
                 .endTime(request.getDate().plusMinutes(request.getDuration()))
                 .date(request.getDate())
                 .zoomLink((String) response.get("join_url"))
-                .zoomMeetingId((String) response.get("id"))
+                .zoomMeetingId((Long) response.get("id"))
                 .zoomPassword((String) response.get("password"))
                 .users(users)
                 .build();
 
-        for (User user : users) {
+        /* for (User user : users) {
             Map<String, Object> registrant = new HashMap<>();
             registrant.put("email", user.getEmail());
             registrant.put("first_name", user.getFirstName());
             registrant.put("last_name", user.getLastName());
 
-            zoomAPI.addRegistrant(meeting.getZoomMeetingId(), registrant, "JWT_TOKEN");
-        }
+            zoomAPI.addRegistrant(meeting.getZoomMeetingId(), registrant, "Bearer " + token); //todo move Bearer to proxy side
+        } **/ //todo Only available for paid users (PRO ACCOUNT)
 
         meetingRepository.save(meeting);
 
@@ -71,7 +74,7 @@ public class ZoomServiceImpl implements ZoomService {
     }
 
     @Override
-    public void addUsersToMeeting(AddUsersToMeetingRequest request) {
+    public void addUsersToMeeting(AddUsersToMeetingRequest request, Integer meetingId) {
 
         //todo check if user is admin of condominium
         //todo check if users are in condominium
@@ -85,14 +88,4 @@ public class ZoomServiceImpl implements ZoomService {
 
     }
 
-
-    @Cacheable(value = "zoomToken", unless = "#result == null") //todo how to make this with a private method?
-    public String getAccessToken() {
-        Map<String, Object> request = new HashMap<>();
-        request.put("grant_type", "client_credentials");
-
-        Map<String, Object> response = zoomAPI.getAccessToken("", "", request); //todo get client id and secret from properties
-
-        return (String) response.get("access_token");
-    }
 }
