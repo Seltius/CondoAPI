@@ -6,6 +6,7 @@ import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import pt.iscte.condo.Utils.UserUtils;
 import pt.iscte.condo.controller.request.DocumentRequest;
 import pt.iscte.condo.controller.response.DocumentResponse;
 import pt.iscte.condo.controller.response.FileResponse;
@@ -28,12 +29,11 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository;
     private final DocumentMapper documentMapper;
-    private final HttpServletRequest httpRequest;
-    private final JwtServiceImpl jwtService;
+    private final UserUtils userUtils;
 
     @Override
     public void uploadDocument(DocumentRequest request) {
-        User uploader = getUserByBearer(getBearer(httpRequest));
+        User uploader =  userUtils.getUserByBearer();
         validateAdminRole(uploader);
         validateFile(request.getFileData());
         storeDocument(request, uploader);
@@ -45,7 +45,7 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found"));
 
-        User user = getUserByBearer(getBearer(httpRequest));
+        User user = userUtils.getUserByBearer();
         if (!user.getId().equals(document.getUser().getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
 
@@ -55,7 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public List<DocumentResponse> getDocuments() {
 
-        User owner = getUserByBearer(getBearer(httpRequest));
+        User owner = userUtils.getUserByBearer();
 
         List<Document> documentList = documentRepository.findAllByUserId(owner.getId())
                 .orElseThrow(() -> new RuntimeException("No documents found"));
@@ -91,11 +91,6 @@ public class DocumentServiceImpl implements DocumentService {
     private void validateAdminRole(User uploader) {
         if (!uploader.getRole().equals(Role.ADMIN))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
-    }
-
-    private User getUserByBearer(String token) {
-        return userRepository.findByEmail(jwtService.getUsername(token))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     private void validateFile(String base64File) {

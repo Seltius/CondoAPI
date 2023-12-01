@@ -29,7 +29,7 @@ public class TokenCacheConfig {
     @Bean
     public LoadingCache<String, String> tokenCache() {
         return Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS) // token expires after 1 hour
+                .expireAfterWrite(1, TimeUnit.HOURS) // zoom token expires after 1 hour
                 .build(new CacheLoader<>() {
                     @Override
                     public @Nullable String load(String key) {

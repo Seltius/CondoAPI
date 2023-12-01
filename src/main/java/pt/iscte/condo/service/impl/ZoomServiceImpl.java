@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import pt.iscte.condo.Utils.UserUtils;
 import pt.iscte.condo.config.TokenCacheConfig;
 import pt.iscte.condo.controller.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.request.CreateMeetingRequest;
@@ -11,6 +12,7 @@ import pt.iscte.condo.domain.Meeting;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.proxy.ZoomAPI;
 import pt.iscte.condo.proxy.request.MeetingRequest;
+import pt.iscte.condo.repository.CondominiumUserRepository;
 import pt.iscte.condo.repository.MeetingRepository;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.ZoomService;
@@ -26,6 +28,8 @@ public class ZoomServiceImpl implements ZoomService {
     private final MeetingRepository meetingRepository;
     private final ZoomAPI zoomAPI;
     private final TokenCacheConfig tokenCacheConfig;
+    private final UserUtils userUtils;
+    private final CondominiumUserRepository condominiumUserRepository;
 
     @Override
     public void createMeeting(CreateMeetingRequest request) {
@@ -68,6 +72,11 @@ public class ZoomServiceImpl implements ZoomService {
 
     @Override
     public List<Meeting> getAllMeetings() {
+
+        User user = userUtils.getUserByBearer();
+        //todo get condominiumUser relation
+        //todo get condominiumId from condominiumUser relation
+        //todo abstract to private method
 
         return meetingRepository.findAllByCondominiumId(1); //todo get user condominium id
 
