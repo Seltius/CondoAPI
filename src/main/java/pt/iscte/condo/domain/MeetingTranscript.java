@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pt.iscte.condo.enums.TranscriptStatus;
 
 @Data
 @Builder
@@ -23,5 +24,8 @@ public class MeetingTranscript {
     @ManyToOne
     @JoinColumn(name = "meeting_id", nullable = false)
     private Meeting meeting;
+
+    @Enumerated(EnumType.STRING)
+    private TranscriptStatus status;
 
 }
