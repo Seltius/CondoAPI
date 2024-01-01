@@ -15,4 +15,4 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 openai:
-  token: {token} # OpenAI API token
+  token: ${openai} # OpenAI API token
