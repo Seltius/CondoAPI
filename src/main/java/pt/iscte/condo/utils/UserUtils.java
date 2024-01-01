@@ -1,4 +1,4 @@
-package pt.iscte.condo.Utils;
+package pt.iscte.condo.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

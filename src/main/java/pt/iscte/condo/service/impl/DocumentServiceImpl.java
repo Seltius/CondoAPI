@@ -6,7 +6,7 @@ import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pt.iscte.condo.Utils.UserUtils;
+import pt.iscte.condo.utils.UserUtils;
 import pt.iscte.condo.controller.request.DocumentRequest;
 import pt.iscte.condo.controller.response.DocumentResponse;
 import pt.iscte.condo.controller.response.FileResponse;

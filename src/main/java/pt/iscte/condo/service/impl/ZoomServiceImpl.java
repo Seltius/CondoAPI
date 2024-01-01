@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pt.iscte.condo.Utils.UserUtils;
+import pt.iscte.condo.utils.UserUtils;
 import pt.iscte.condo.config.TokenCacheConfig;
 import pt.iscte.condo.controller.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.request.CreateMeetingRequest;
