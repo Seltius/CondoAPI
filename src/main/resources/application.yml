@@ -16,3 +16,5 @@ spring:
 
 openai:
   token: ${openai} # OpenAI API token
+  assistant: ${assistant-runner} # OpenAI API runner
+  rateLimit: 3

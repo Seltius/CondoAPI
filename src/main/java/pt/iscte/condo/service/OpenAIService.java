@@ -1,9 +1,11 @@
 package pt.iscte.condo.service;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface OpenAIService {
 
-    String startAssistant(String transcript);
+    CompletableFuture<String> createNewThread(String transcript);
 
-    String runAssistant(String threadId, String question);
+    CompletableFuture<String> askAssistant(String threadId, String question);
 
 }

@@ -2,7 +2,6 @@ package pt.iscte.condo.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pt.iscte.condo.domain.AIAnswer;
 import pt.iscte.condo.domain.AIQuestion;
@@ -15,6 +14,7 @@ import pt.iscte.condo.service.OpenAIService;
 import pt.iscte.condo.service.TranscriptService;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class TranscriptServiceImpl implements TranscriptService {
     private final MeetingTranscriptRepository transcriptRepository;
 
     @Override
-    @Scheduled(fixedRate = 600000) // 600000 milliseconds = 10 minutes
+    //@Scheduled(fixedRate = 600000) // 600000 milliseconds = 10 minutes
     @Transactional
     public void processTranscripts() {
 
@@ -34,27 +34,37 @@ public class TranscriptServiceImpl implements TranscriptService {
         transcriptRepository.findAllByStatus(TranscriptStatus.TO_PROCESS).ifPresent(transcripts -> {
 
             for (MeetingTranscript transcript : transcripts) {
-                String threadId = openAIService.startAssistant(transcript.getTranscript());
+                CompletableFuture<String> futureThreadId = openAIService.createNewThread(transcript.getTranscript());
+                System.out.println("futureThreadId: " + futureThreadId);
 
-                for (AIQuestion question : questions) {
+                futureThreadId.thenAccept(threadId -> {
 
-                    String answer = openAIService.runAssistant(threadId, question.getQuestion());
+                    CompletableFuture[] futures = questions
+                            .stream()
+                            .map(question -> {
 
-                    AIAnswer aiAnswer = AIAnswer.builder()
-                            .answer(answer)
-                            .question(question)
-                            .transcript(transcript)
-                            .build();
+                                    CompletableFuture<String> futureAnswer = openAIService.askAssistant(threadId, question.getQuestion());
+                                System.out.println("futureAnswer: " + futureAnswer);
 
-                    aiAnswerRepository.save(aiAnswer);
+                                    return futureAnswer.thenAccept(answer -> {
 
-                }
+                                        AIAnswer aiAnswer = AIAnswer.builder()
+                                                .answer(answer)
+                                                .question(question)
+                                                .transcript(transcript)
+                                                .build();
 
-                //todo generate minute pdf
+                                        aiAnswerRepository.save(aiAnswer);
 
-                transcript.setStatus(TranscriptStatus.COMPLETED);
-                transcriptRepository.save(transcript);
+                                    });
+                            }).toArray(CompletableFuture[]::new);
 
+                    //todo generate minute pdf
+                    CompletableFuture.allOf(futures).thenRun(() -> {
+                        transcript.setStatus(TranscriptStatus.COMPLETED);
+                        transcriptRepository.save(transcript);
+                    });
+                });
             }
         });
     }

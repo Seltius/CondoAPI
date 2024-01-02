@@ -1,18 +1,18 @@
 package pt.iscte.condo.proxy;
 
-import feign.Headers;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pt.iscte.condo.config.OpenAIConfig;
-import pt.iscte.condo.proxy.request.*;
+import pt.iscte.condo.proxy.request.AddMessageRequest;
+import pt.iscte.condo.proxy.request.CreateAssistantRequest;
+import pt.iscte.condo.proxy.request.RunThreadRequest;
 import pt.iscte.condo.proxy.responses.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "openai", url = "https://api.openai.com/v1/", configuration = OpenAIConfig.class)
-@Headers("OpenAI-Beta: assistants=v1")
 public interface OpenAI {
 
     @PostMapping(value = "assistants", consumes = APPLICATION_JSON_VALUE)

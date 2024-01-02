@@ -16,8 +16,8 @@ public class GetMessagesResponse {
 
     private String object;
     private List<ThreadMessage> data;
-    private String firstId; //todo firstId is the message that we want
-    private String lastId;
+    private String first_id; //todo firstId is the message that we want
+    private String last_id;
     private String hasMore;
 
 }
