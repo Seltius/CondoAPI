@@ -13,7 +13,10 @@ public class OpenAIConfig {
 
     @Bean
     public RequestInterceptor requestInterceptor() {
-        return requestTemplate -> requestTemplate.header("Authorization", "Bearer " + apiKey);
+        return requestTemplate -> {
+            requestTemplate.header("Authorization", "Bearer " + apiKey);
+            requestTemplate.header("OpenAI-Beta", "assistants=v1");
+        };
     }
 
 }
