@@ -43,64 +43,71 @@ public class TranscriptServiceImpl implements TranscriptService {
         List<AIQuestion> questions = aiQuestionsRepository.findAll();
         Map<String, String> answers = new HashMap<>();
 
-        transcriptRepository.findAllByStatus(TranscriptStatus.TO_PROCESS).ifPresent(transcripts -> {
+        transcriptRepository.findAllByStatus(TranscriptStatus.TO_PROCESS).ifPresent(transcripts ->
+                transcripts.parallelStream().forEach(transcript -> processTranscript(transcript, questions, answers)));
+    }
 
-            for (MeetingTranscript transcript : transcripts) {
-                CompletableFuture<String> futureThreadId = openAIService.createNewThread(transcript.getTranscript());
-                System.out.println("futureThreadId: " + futureThreadId);
+    private void processTranscript(MeetingTranscript transcript, List<AIQuestion> questions, Map<String, String> answers) {
 
-                futureThreadId.thenAccept(threadId -> {
+        CompletableFuture<String> futureThreadId = openAIService.createNewThread(transcript.getTranscript());
+        futureThreadId.thenAccept(threadId -> {
+            CompletableFuture[] futures = questions.stream()
+                    .map(question -> processQuestion(threadId, question, transcript, answers))
+                    .toArray(CompletableFuture[]::new);
 
-                    CompletableFuture[] futures = questions
-                            .stream()
-                            .map(question -> {
-                                CompletableFuture<String> futureAnswer = openAIService.askAssistant(threadId, question.getQuestion());
-                                System.out.println("futureAnswer: " + futureAnswer);
+            CompletableFuture.allOf(futures).thenRun(() -> finalizeTranscripts(transcript, answers));
 
-                                    return futureAnswer.thenAccept(answer -> {
-                                        answers.put(question.getPlaceholder(), answer);
-
-                                        AIAnswer aiAnswer = AIAnswer.builder()
-                                                .answer(answer)
-                                                .question(question)
-                                                .transcript(transcript)
-                                                .build();
-
-                                        aiAnswerRepository.save(aiAnswer);
-
-                                    });
-                            }).toArray(CompletableFuture[]::new);
-
-                    CompletableFuture.allOf(futures).thenRun(() -> {
-
-                        try {
-                            //TODO DELETE (JUST FOR TEST PURPOSES
-                            User user = userRepository.findById(1)
-                                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-                            Condominium condominium = condominiumRepository.findById(1)
-                                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Condominium not found"))  ;
-
-                            Document document = Document.builder()
-                                    .name("TEST.pdf") //TODO GENERATE PROGRAMMATIC
-                                    .uploader(user) //TODO GENERATE PROGRAMMATIC
-                                    .user(user) //TODO GENERATE PROGRAMMATIC
-                                    .uploadDate(LocalDateTime.now())
-                                    .fileData(pdfService.generateMinute(answers))
-                                    .type(DocumentType.MINUTES)
-                                    .condominium(condominium) //TODO GENERATE PROGRAMMATIC
-                                    .build();
-
-                            documentRepository.save(document);
-                        } catch (Exception e) {
-                            throw new RuntimeException("PDF File generation failed", e.getCause()); //todo recover ? log ?
-                        }
-
-                        transcript.setStatus(TranscriptStatus.COMPLETED);
-                        transcriptRepository.save(transcript);
-                    });
-                });
-            }
         });
+    }
+
+    private Object processQuestion(String threadId, AIQuestion question, MeetingTranscript transcript, Map<String, String> answers) {
+        CompletableFuture<String> futureAnswer = openAIService.askAssistant(threadId, question.getQuestion());
+        return futureAnswer.thenAccept(answer -> {
+            answers.put(question.getPlaceholder(), answer);
+
+            AIAnswer aiAnswer = AIAnswer.builder()
+                    .answer(answer)
+                    .question(question)
+                    .transcript(transcript)
+                    .build();
+
+            aiAnswerRepository.save(aiAnswer);
+        });
+    }
+
+    private void finalizeTranscripts(MeetingTranscript transcript, Map<String, String> answers) {
+
+        try {
+            byte[] pdfData = pdfService.generateMinute(answers);
+            saveDocument(pdfData);
+
+            transcript.setStatus(TranscriptStatus.COMPLETED);
+            transcriptRepository.save(transcript);
+        } catch (Exception e) {
+            throw new RuntimeException("PDF File generation failed", e.getCause()); //todo recover ? log ?
+        }
+
+    }
+
+    private void saveDocument(byte[] pdfData) {
+
+        User user = userRepository.findById(1)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Condominium condominium = condominiumRepository.findById(1)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Condominium not found"));
+
+        Document document = Document.builder()
+                .name("TEST.pdf") //TODO GENERATE PROGRAMMATIC
+                .uploader(user) //TODO GENERATE PROGRAMMATIC
+                .user(user) //TODO GENERATE PROGRAMMATIC
+                .uploadDate(LocalDateTime.now())
+                .fileData(pdfData)
+                .type(DocumentType.MINUTES)
+                .condominium(condominium) //TODO GENERATE PROGRAMMATIC
+                .build();
+
+        documentRepository.save(document);
+
     }
 }
