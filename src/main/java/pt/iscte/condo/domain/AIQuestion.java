@@ -20,4 +20,7 @@ public class AIQuestion {
     @Column(nullable = false)
     private String question;
 
+    @Column(nullable = false)
+    private String placeholder;
+
 }
