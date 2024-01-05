@@ -16,9 +16,7 @@ import pt.iscte.condo.utils.RateLimitedQueue;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,164 +26,91 @@ public class OpenAIServiceImpl implements OpenAIService {
     private String assistantId;
 
     private final OpenAI openAI;
-    private final RateLimitedQueue<CompletableFuture<String>> queue;
 
     @Override
-    public CompletableFuture<String> createNewThread(String transcript) {
+    public String createNewThread(String transcript) {
 
-        CompletableFuture<String> futureThreadId = new CompletableFuture<>();
-        CompletableFuture<String> futureRunId = new CompletableFuture<>();
-        CompletableFuture<GetThreadStatusResponse> futureThreadStatus = new CompletableFuture<>();
-        CompletableFuture<GetThreadStatusResponse> newFutureThreadStatus = new CompletableFuture<>();
+        // create thread
+        String threadId = openAI.createThread().getId(); //todo check if thread is null and http status code
+        System.out.println("threadId: " + threadId);
 
-        Callable<CompletableFuture<String>> task = () -> {
+        // add message to thread
+        AddMessageRequest addMessageRequest = AddMessageRequest.builder()
+                .content(transcript)
+                .role(OpenAIRole.user.toString())
+                .build();
 
-            // create thread
-            queue.schedule(() -> {
-                String threadId = openAI.createThread().getId(); //todo check if thread is null and http status code
-                System.out.println("threadId: " + threadId);
-                futureThreadId.complete(threadId);
-                return null;
-            });
+        openAI.addMessage(threadId, addMessageRequest); //todo check http status code
+        System.out.println("addMessageRequest: " + addMessageRequest);
 
-            // add message to thread
-            futureThreadId.thenAccept(threadId -> {
-                AddMessageRequest addMessageRequest = AddMessageRequest.builder()
-                        .content(transcript)
-                        .role(OpenAIRole.user.toString())
-                        .build();
+        // run thread
+        RunThreadRequest runThreadRequest = RunThreadRequest.builder()
+                .assistant_id(assistantId)
+                .build();
 
-                queue.schedule(() -> {
-                    openAI.addMessage(threadId, addMessageRequest); //todo check http status code
-                    System.out.println("addMessageRequest: " + addMessageRequest);
-                    return null;
-                });
-            });
+        String runId = openAI.runThread(threadId, runThreadRequest).getId(); //todo check http status code
+        System.out.println("runThreadRequest: " + runThreadRequest);
 
-            // run thread
-            futureThreadId.thenAccept(threadId -> {
-                RunThreadRequest runThreadRequest = RunThreadRequest.builder()
-                        .assistant_id(assistantId)
-                        .build();
+        GetThreadStatusResponse threadStatus = openAI.getThreadStatus(threadId, runId); //todo check http status code
+        System.out.println("threadStatus: " + threadStatus.getStatus());
 
-                queue.schedule(() -> {
-                    String runId = openAI.runThread(threadId, runThreadRequest).getId(); //todo check http status code
-                    System.out.println("runThreadRequest: " + runThreadRequest);
-                    futureRunId.complete(runId);
-                    return null;
-                });
+        checkThreadStatus(threadId, runThreadRequest, runId, threadStatus);
 
-            });
-
-            futureThreadId.thenCombine(futureRunId, (threadId, runId) -> {
-                queue.schedule(() -> {
-                    GetThreadStatusResponse threadStatusResponse = openAI.getThreadStatus(threadId, runId); //todo check http status code
-                    System.out.println("threadStatus: " + threadStatusResponse.getStatus());
-                    futureThreadStatus.complete(threadStatusResponse);
-                    return null;
-                });
-
-                // run while chat assistant thread is not completed
-                futureThreadStatus.thenAccept(threadStatusResponse -> {
-                    while (!Objects.equals(threadStatusResponse.getStatus(), "completed")) {
-                        queue.schedule(() -> {
-                            GetThreadStatusResponse newThreadStatusResponse = openAI.getThreadStatus(threadId, runId); //todo check http status code
-                            System.out.println("new threadStatus: " + newThreadStatusResponse.getStatus());
-                            newFutureThreadStatus.complete(newThreadStatusResponse);
-                            return null;
-                        });
-                        try {
-                            threadStatusResponse = newFutureThreadStatus.get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-                return null;
-            });
-            return null;
-        };
-
-        queue.schedule(task);
-
-        return futureThreadId;
+        return threadId;
     }
 
     @Override
-    public CompletableFuture<String> askAssistant(String threadId, String question) {
+    public String askAssistant(String threadId, String question) {
 
-        CompletableFuture<String> futureRunId = new CompletableFuture<>();
-        CompletableFuture<GetThreadStatusResponse> futureThreadStatus = new CompletableFuture<>();
-        CompletableFuture<GetThreadStatusResponse> newFutureThreadStatus = new CompletableFuture<>();
-        CompletableFuture<GetMessagesResponse> futureAnswerResponse = new CompletableFuture<>();
-        CompletableFuture<String> futureAnswer = new CompletableFuture<>();
+        // add message to thread
+        AddMessageRequest addMessageRequest = AddMessageRequest.builder()
+                .content(question)
+                .role(OpenAIRole.user.toString())
+                .build();
 
-        Callable<CompletableFuture<String>> task = () -> {
+        openAI.addMessage(threadId, addMessageRequest); //todo check http status code
+        System.out.println("addMessageRequest: " + addMessageRequest.getContent());
 
-            AddMessageRequest addMessageRequest = AddMessageRequest.builder()
-                    .content(question)
-                    .role(OpenAIRole.user.toString())
-                    .build();
+        // run thread
+        RunThreadRequest runThreadRequest = RunThreadRequest.builder()
+                .assistant_id(assistantId)
+                .build();
 
-            queue.schedule(() -> {
-                openAI.addMessage(threadId, addMessageRequest); //todo check http status code
-                System.out.println("addMessageRequest: " + addMessageRequest.getContent());
-                return null;
-            });
+        String runId = openAI.runThread(threadId, runThreadRequest).getId(); //todo check http status code
 
-            // run thread
-            RunThreadRequest runThreadRequest = RunThreadRequest.builder()
-                    .assistant_id(assistantId)
-                    .build();
+        GetThreadStatusResponse threadStatus = openAI.getThreadStatus(threadId, runId); //todo check http status code
+        System.out.println("threadStatusMessage: " + threadStatus.getStatus());
 
-            queue.schedule(() -> {
-                String runId = openAI.runThread(threadId, runThreadRequest).getId(); //todo check http status code
-                futureRunId.complete(runId);
-                return null;
-            });
+        // run while chat assistant thread is not completed
+        checkThreadStatus(threadId, runThreadRequest, runId, threadStatus);
 
-            futureRunId.thenAccept(runId -> {
-                queue.schedule(() -> {
-                    GetThreadStatusResponse response = openAI.getThreadStatus(threadId, runId); //todo check http status code
-                    System.out.println("threadStatusMessage: " + response.getStatus());
-                    futureThreadStatus.complete(response);
-                    return null;
-                });
+        GetMessagesResponse getMessagesResponse = openAI.getMessages(threadId); //todo check http status code
+        System.out.println("message firstId: " + getMessagesResponse.getFirst_id());
 
-                // run while chat assistant thread is not completed
-                futureThreadStatus.thenAccept(threadStatusResponse -> {
-                    while (!Objects.equals(threadStatusResponse.getStatus(), "completed")) {
-                        queue.schedule(() -> {
-                            GetThreadStatusResponse response = openAI.getThreadStatus(threadId, runId); //todo check http status code
-                            System.out.println("new threadStatusMessage: " + response.getStatus());
-                            newFutureThreadStatus.complete(response);
-                            return null;
-                        });
-                        try {
-                            threadStatusResponse = newFutureThreadStatus.get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-            });
+        return getAnswerById(getMessagesResponse.getData(), getMessagesResponse.getFirst_id());
+    }
 
-            queue.schedule(() -> {
-                GetMessagesResponse response = openAI.getMessages(threadId); //todo check http status code
-                System.out.println("message firstId: " + response.getFirst_id());
-                futureAnswerResponse.complete(response);
-                return null;
-            });
+    private void checkThreadStatus(String threadId, RunThreadRequest runThreadRequest, String runId, GetThreadStatusResponse threadStatus) {
+        while (!Objects.equals(threadStatus.getStatus(), "completed")) {
+            threadStatus = openAI.getThreadStatus(threadId, runId); //todo check http status code
+            System.out.println("runId: " + runId);
+            System.out.println("threadStatus: " + threadStatus.getStatus());
 
-            futureAnswerResponse.thenAccept(response -> {
-                String answer = getAnswerById(response.getData(), response.getFirst_id());
-                futureAnswer.complete(answer);
-            });
+            if (Objects.equals(threadStatus.getStatus(), "failed")) {
+                runId = openAI.runThread(threadId, runThreadRequest).getId();
+                try {
+                    Thread.sleep(20000); // pause for 20 second //todo execute this procedure in a different thread
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
-            return null;
-        };
-        queue.schedule(task);
-        return futureAnswer;
+            try {
+                Thread.sleep(1000); // pause for 1 second
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String getAnswerById(List<ThreadMessage> messages, String id) {

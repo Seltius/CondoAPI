@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -49,30 +48,26 @@ public class TranscriptServiceImpl implements TranscriptService {
 
     private void processTranscript(MeetingTranscript transcript, List<AIQuestion> questions, Map<String, String> answers) {
 
-        CompletableFuture<String> futureThreadId = openAIService.createNewThread(transcript.getTranscript());
-        futureThreadId.thenAccept(threadId -> {
-            CompletableFuture[] futures = questions.stream()
-                    .map(question -> processQuestion(threadId, question, transcript, answers))
-                    .toArray(CompletableFuture[]::new);
+        String threadId = openAIService.createNewThread(transcript.getTranscript());
 
-            CompletableFuture.allOf(futures).thenRun(() -> finalizeTranscripts(transcript, answers));
+        questions.forEach(
+                question -> processQuestion(threadId, question, transcript, answers)
+        );
 
-        });
+        finalizeTranscripts(transcript, answers);
     }
 
-    private Object processQuestion(String threadId, AIQuestion question, MeetingTranscript transcript, Map<String, String> answers) {
-        CompletableFuture<String> futureAnswer = openAIService.askAssistant(threadId, question.getQuestion());
-        return futureAnswer.thenAccept(answer -> {
-            answers.put(question.getPlaceholder(), answer);
+    private void processQuestion(String threadId, AIQuestion question, MeetingTranscript transcript, Map<String, String> answers) {
+        String answer = openAIService.askAssistant(threadId, question.getQuestion());
+        answers.put(question.getPlaceholder(), answer);
 
-            AIAnswer aiAnswer = AIAnswer.builder()
-                    .answer(answer)
-                    .question(question)
-                    .transcript(transcript)
-                    .build();
+        AIAnswer aiAnswer = AIAnswer.builder()
+                .answer(answer)
+                .question(question)
+                .transcript(transcript)
+                .build();
 
-            aiAnswerRepository.save(aiAnswer);
-        });
+        aiAnswerRepository.save(aiAnswer);
     }
 
     private void finalizeTranscripts(MeetingTranscript transcript, Map<String, String> answers) {
