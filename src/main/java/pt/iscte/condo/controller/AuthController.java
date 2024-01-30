@@ -9,13 +9,16 @@ import pt.iscte.condo.controller.request.RegisterRequest;
 import pt.iscte.condo.controller.response.AuthenticationResponse;
 import pt.iscte.condo.controller.response.ValidateTokenResponse;
 import pt.iscte.condo.service.AuthService;
+import pt.iscte.condo.service.TranscriptService;
 
 @RestController
-@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
+
+    private final TranscriptService transcriptService;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest request) {
@@ -30,6 +33,11 @@ public class AuthController {
     @GetMapping("/validate")
     public ResponseEntity<ValidateTokenResponse> validate(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(authService.validate(token));
+    }
+
+    @GetMapping("/test")
+    public void test() {
+        transcriptService.processTranscripts();
     }
 
 }

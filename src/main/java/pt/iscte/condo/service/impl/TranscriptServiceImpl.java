@@ -29,7 +29,7 @@ public class TranscriptServiceImpl implements TranscriptService {
 
     // Repositories
     private final AIAnswerRepository aiAnswerRepository;
-    private final MeetingTranscriptRepository transcriptRepository;
+    private final TranscriptRepository transcriptRepository;
     private final DocumentRepository documentRepository;
     private final UserRepository userRepository; // TODO DELETE (JUST FOR TEST PURPOSES)
     private final CondominiumRepository condominiumRepository; // TODO DELETE (JUST FOR TEST PURPOSES)
@@ -43,12 +43,33 @@ public class TranscriptServiceImpl implements TranscriptService {
         Map<String, String> answers = new HashMap<>();
 
         transcriptRepository.findAllByStatus(TranscriptStatus.TO_PROCESS).ifPresent(transcripts ->
-                transcripts.parallelStream().forEach(transcript -> processTranscript(transcript, questions, answers)));
+                transcripts.parallelStream().forEach(transcript -> handleTranscript(transcript, questions, answers)));
     }
 
-    private void processTranscript(MeetingTranscript transcript, List<AIQuestion> questions, Map<String, String> answers) {
+    @Transactional
+    public Map<String, String> processTranscript(Transcript transcript) {
 
-        String threadId = openAIService.createNewThread(transcript.getTranscript());
+        List<AIQuestion> questions = aiQuestionsRepository.findAll();
+        Map<String, String> answers = new HashMap<>();
+
+        String threadId = openAIService.createNewThread(transcript.getText());
+
+        questions.forEach(
+                question -> {
+                    AIAnswer aiAnswer = processQuestion(threadId, question, transcript, answers);
+                    answers.put(question.getId().toString(), aiAnswer.getAnswer());
+                }
+        );
+
+        transcript.setStatus(TranscriptStatus.COMPLETED);
+        transcriptRepository.save(transcript);
+
+        return answers;
+    }
+
+    private void handleTranscript(Transcript transcript, List<AIQuestion> questions, Map<String, String> answers) {
+
+        String threadId = openAIService.createNewThread(transcript.getText());
 
         questions.forEach(
                 question -> processQuestion(threadId, question, transcript, answers)
@@ -57,7 +78,7 @@ public class TranscriptServiceImpl implements TranscriptService {
         finalizeTranscripts(transcript, answers);
     }
 
-    private void processQuestion(String threadId, AIQuestion question, MeetingTranscript transcript, Map<String, String> answers) {
+    private AIAnswer processQuestion(String threadId, AIQuestion question, Transcript transcript, Map<String, String> answers) {
         String answer = openAIService.askAssistant(threadId, question.getQuestion());
         answers.put(question.getPlaceholder(), answer);
 
@@ -67,10 +88,10 @@ public class TranscriptServiceImpl implements TranscriptService {
                 .transcript(transcript)
                 .build();
 
-        aiAnswerRepository.save(aiAnswer);
+        return aiAnswerRepository.save(aiAnswer);
     }
 
-    private void finalizeTranscripts(MeetingTranscript transcript, Map<String, String> answers) {
+    private void finalizeTranscripts(Transcript transcript, Map<String, String> answers) {
 
         try {
             byte[] pdfData = pdfService.generateMinute(answers);
@@ -98,11 +119,12 @@ public class TranscriptServiceImpl implements TranscriptService {
                 .user(user) //TODO GENERATE PROGRAMMATIC
                 .uploadDate(LocalDateTime.now())
                 .fileData(pdfData)
-                .type(DocumentType.MINUTES)
+                .type(DocumentType.MINUTE)
                 .condominium(condominium) //TODO GENERATE PROGRAMMATIC
                 .build();
 
         documentRepository.save(document);
 
     }
+
 }

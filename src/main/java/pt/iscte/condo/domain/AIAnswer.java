@@ -26,6 +26,6 @@ public class AIAnswer {
 
     @ManyToOne()
     @JoinColumn(name = "transcript_id", nullable = false)
-    private MeetingTranscript transcript;
+    private Transcript transcript;
 
 }

@@ -11,8 +11,8 @@ import pt.iscte.condo.service.DocumentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/documents")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/documents")
 public class DocumentController {
 
     private final DocumentService documentService;

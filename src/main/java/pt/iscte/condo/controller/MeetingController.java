@@ -11,8 +11,8 @@ import pt.iscte.condo.service.ZoomService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/meeting")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/meeting")
 public class MeetingController {
 
     private final ZoomService zoomService;
