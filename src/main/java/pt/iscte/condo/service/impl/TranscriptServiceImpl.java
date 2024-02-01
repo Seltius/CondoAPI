@@ -51,20 +51,21 @@ public class TranscriptServiceImpl implements TranscriptService {
 
         List<AIQuestion> questions = aiQuestionsRepository.findAll();
         Map<String, String> answers = new HashMap<>();
+        Map<String, String> output = new HashMap<>();
 
         String threadId = openAIService.createNewThread(transcript.getText());
 
         questions.forEach(
                 question -> {
                     AIAnswer aiAnswer = processQuestion(threadId, question, transcript, answers);
-                    answers.put(question.getId().toString(), aiAnswer.getAnswer());
+                    output.put(aiAnswer.getId().toString(), aiAnswer.getAnswer());
                 }
         );
 
         transcript.setStatus(TranscriptStatus.COMPLETED);
         transcriptRepository.save(transcript);
 
-        return answers;
+        return output;
     }
 
     private void handleTranscript(Transcript transcript, List<AIQuestion> questions, Map<String, String> answers) {
@@ -88,7 +89,7 @@ public class TranscriptServiceImpl implements TranscriptService {
                 .transcript(transcript)
                 .build();
 
-        return aiAnswerRepository.save(aiAnswer);
+            return aiAnswerRepository.saveAndFlush(aiAnswer);
     }
 
     private void finalizeTranscripts(Transcript transcript, Map<String, String> answers) {

@@ -6,6 +6,6 @@ import java.util.Map;
 
 public interface SummarizeService {
 
-    Map<String, String> summarize(DocumentRequest request);
+    Map<String, String> summarizeDocument(DocumentRequest request);
 
 }

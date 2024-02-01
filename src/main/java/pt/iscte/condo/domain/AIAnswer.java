@@ -24,8 +24,8 @@ public class AIAnswer {
     @JoinColumn(name = "question_id", nullable = false)
     private AIQuestion question;
 
-    @ManyToOne()
-    @JoinColumn(name = "transcript_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "transcript_id", referencedColumnName = "id")
     private Transcript transcript;
 
 }

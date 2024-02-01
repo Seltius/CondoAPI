@@ -20,7 +20,7 @@ public class SummarizeController {
 
     @PostMapping()
     public ResponseEntity<Map<String, String>> summarize(@RequestBody DocumentRequest request) {
-        return ResponseEntity.ok(summarizeService.summarize(request));
+        return ResponseEntity.ok(summarizeService.summarizeDocument(request));
     }
 
 }

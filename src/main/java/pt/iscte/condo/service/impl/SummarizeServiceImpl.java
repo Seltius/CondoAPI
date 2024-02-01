@@ -1,5 +1,6 @@
 package pt.iscte.condo.service.impl;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class SummarizeServiceImpl implements SummarizeService {
     private final TranscriptRepository transcriptRepository;
 
     @Override
-    public Map<String, String> summarize(DocumentRequest request) {
+    public Map<String, String> summarizeDocument(DocumentRequest request) {
 
         Document document = documentMapper.documentRequestToDocument(request);
         byte[] fileData = document.getFileData();
@@ -61,7 +62,7 @@ public class SummarizeServiceImpl implements SummarizeService {
                 .status(TranscriptStatus.TO_PROCESS)
                 .build();
 
-        return transcriptRepository.saveAndFlush(transcript); //todo fix me
+        return transcriptRepository.save(transcript);
 
     }
 
