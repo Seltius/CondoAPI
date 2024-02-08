@@ -1,8 +1,8 @@
 package pt.iscte.condo.service.impl;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pt.iscte.condo.controller.request.DocumentRequest;
 import pt.iscte.condo.domain.Condominium;
@@ -10,8 +10,8 @@ import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.Transcript;
 import pt.iscte.condo.enums.TranscriptStatus;
 import pt.iscte.condo.mapper.DocumentMapper;
-import pt.iscte.condo.repository.CondominiumUserRepository;
 import pt.iscte.condo.repository.TranscriptRepository;
+import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.SummarizeService;
 import pt.iscte.condo.service.TranscriptService;
 
@@ -26,7 +26,7 @@ public class SummarizeServiceImpl implements SummarizeService {
 
     private final DocumentMapper documentMapper;
 
-    private final CondominiumUserRepository condominiumUserRepository;
+    private final UserRepository userRepository;
     private final TranscriptRepository transcriptRepository;
 
     @Override
@@ -54,7 +54,9 @@ public class SummarizeServiceImpl implements SummarizeService {
 
     private Transcript getTranscript(String text, Integer userId) {
 
-        Condominium condominium = condominiumUserRepository.findById(userId).get().getApartment().getCondominium();
+        Condominium condominium = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found while creating transcript"))
+                .getCondominium();
 
         Transcript transcript = Transcript.builder()
                 .condominium(condominium)

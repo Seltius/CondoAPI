@@ -20,7 +20,7 @@ public abstract class DocumentMapper {
     public abstract List<DocumentResponse> documentListToDocumentsListResponse(List<Document> documentList);
 
     protected String userToUserName(User user) {
-        return user.getFirstName() + " " + user.getLastName();
+        return user.getName();
     }
 
     protected String bytesToString(byte[] bytes) {

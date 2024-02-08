@@ -21,8 +21,7 @@ public class Apartment {
     private String fraction;
 
     @ManyToOne
-    @JoinColumn(name = "condominium_id", nullable = false)
-    private Condominium condominium;
-
+    @JoinColumn(name = "userId")
+    private User user; //TODO: WHO IS THE OWNER, IS THIS RELATION CORRECT?
 
 }

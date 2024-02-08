@@ -23,4 +23,13 @@ public class Condominium {
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
+    private String parish;
+
+    @Column(nullable = false)
+    private String country;
+
+    @OneToOne(mappedBy = "condominium")
+    private User user;
+
 }

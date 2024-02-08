@@ -12,7 +12,6 @@ import pt.iscte.condo.domain.Meeting;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.proxy.ZoomAPI;
 import pt.iscte.condo.proxy.request.MeetingRequest;
-import pt.iscte.condo.repository.CondominiumUserRepository;
 import pt.iscte.condo.repository.MeetingRepository;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.ZoomService;
@@ -29,7 +28,6 @@ public class ZoomServiceImpl implements ZoomService {
     private final ZoomAPI zoomAPI;
     private final TokenCacheConfig tokenCacheConfig;
     private final UserUtils userUtils;
-    private final CondominiumUserRepository condominiumUserRepository;
 
     @Override
     public void createMeeting(CreateMeetingRequest request) {
@@ -54,7 +52,7 @@ public class ZoomServiceImpl implements ZoomService {
                 .zoomLink((String) response.get("join_url"))
                 .zoomMeetingId((Long) response.get("id"))
                 .zoomPassword((String) response.get("password"))
-                .users(users)
+                //todo add user list
                 .build();
 
         /* for (User user : users) {
@@ -91,7 +89,7 @@ public class ZoomServiceImpl implements ZoomService {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Meeting not found"));
 
-        meeting.getUsers().add(null); //todo input users list
+        //meeting.getUsers().add(null); //todo relation between meeting and user
 
         meetingRepository.save(meeting);
 

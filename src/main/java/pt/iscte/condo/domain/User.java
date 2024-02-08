@@ -26,10 +26,7 @@ public class User implements UserDetails {
     private Integer id;
 
     @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
+    private String name;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -39,6 +36,19 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToOne()
+    @JoinColumn(name = "condominiumId")
+    private Condominium condominium;
+
+    @OneToMany(mappedBy = "user")
+    private List<Apartment> apartments;
+
+    @OneToMany(mappedBy = "organizer")
+    private List<Meeting> organizerList;
+
+    @OneToMany(mappedBy = "secretary")
+    private List<Meeting> secretaryList;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

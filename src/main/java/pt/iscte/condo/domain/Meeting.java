@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,10 +19,6 @@ public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @ManyToOne
-    @JoinColumn(name = "condominium_id", nullable = false)
-    private Condominium condominium;
 
     private String title;
 
@@ -42,7 +37,19 @@ public class Meeting {
 
     private String zoomPassword;
 
-    @ManyToMany
-    private List<User> users = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "organizerId", nullable = false)
+    private User organizer;
+
+    @ManyToOne
+    @JoinColumn(name = "secretaryId")
+    private User secretary;
+
+    @ManyToOne
+    @JoinColumn(name = "condominiumId", nullable = false)
+    private Condominium condominium;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<MeetingTopic> topics;
 
 }

@@ -6,23 +6,28 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class CondominiumUser {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class MeetingTopic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false)
+    private String topic;
+
+    @Column(nullable = false)
+    private String description;
+
+    private String aiDescription;
 
     @ManyToOne
-    @JoinColumn(name = "apartment_id", nullable = false)
-    private Apartment apartment;
+    @JoinColumn(name = "meetingId", nullable = false)
+    private Meeting meeting;
+
 
 }

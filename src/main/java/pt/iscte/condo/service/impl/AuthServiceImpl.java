@@ -27,8 +27,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthenticationResponse register(RegisterRequest request) {
         var user = User
                 .builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
