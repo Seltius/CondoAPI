@@ -6,10 +6,9 @@ import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pt.iscte.condo.utils.UserUtils;
-import pt.iscte.condo.controller.request.DocumentRequest;
-import pt.iscte.condo.controller.response.DocumentResponse;
-import pt.iscte.condo.controller.response.FileResponse;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.response.DocumentResponse;
+import pt.iscte.condo.controller.dto.response.FileResponse;
 import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.enums.Role;
@@ -17,6 +16,7 @@ import pt.iscte.condo.mapper.DocumentMapper;
 import pt.iscte.condo.repository.DocumentRepository;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.DocumentService;
+import pt.iscte.condo.utils.UserUtils;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -61,18 +61,6 @@ public class DocumentServiceImpl implements DocumentService {
                 .orElseThrow(() -> new RuntimeException("No documents found"));
 
         return documentMapper.documentListToDocumentsListResponse(documentList);
-    }
-
-    private String getBearer(HttpServletRequest request) {
-
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access Denied");
-        }
-
     }
 
     private void storeDocument(DocumentRequest request, User uploader) {

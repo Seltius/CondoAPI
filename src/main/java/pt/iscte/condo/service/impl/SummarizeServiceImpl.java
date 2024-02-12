@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pt.iscte.condo.controller.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
 import pt.iscte.condo.domain.Condominium;
 import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.Transcript;

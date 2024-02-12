@@ -4,55 +4,68 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pt.iscte.condo.utils.UserUtils;
 import pt.iscte.condo.config.TokenCacheConfig;
-import pt.iscte.condo.controller.request.AddUsersToMeetingRequest;
-import pt.iscte.condo.controller.request.CreateMeetingRequest;
+import pt.iscte.condo.controller.dto.request.AddUsersToMeetingRequest;
+import pt.iscte.condo.controller.dto.request.CreateMeetingRequest;
 import pt.iscte.condo.domain.Meeting;
 import pt.iscte.condo.domain.User;
+import pt.iscte.condo.mapper.MeetingMapper;
 import pt.iscte.condo.proxy.ZoomAPI;
-import pt.iscte.condo.proxy.request.MeetingRequest;
 import pt.iscte.condo.repository.MeetingRepository;
 import pt.iscte.condo.repository.UserRepository;
-import pt.iscte.condo.service.ZoomService;
+import pt.iscte.condo.service.MeetingService;
+import pt.iscte.condo.utils.UserUtils;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ZoomServiceImpl implements ZoomService {
+public class MeetingServiceImpl implements MeetingService {
 
     private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
+
     private final ZoomAPI zoomAPI;
+
     private final TokenCacheConfig tokenCacheConfig;
+
     private final UserUtils userUtils;
+
+    private final MeetingMapper meetingMapper;
 
     @Override
     public void createMeeting(CreateMeetingRequest request) {
-        List<User> users = userRepository.findAllById(request.getUserIds());
+        /*List<User> users = userRepository.findAllById(request.getUserIds());
         String token = tokenCacheConfig.getToken("zoomToken", tokenCacheConfig.tokenCache());
 
-        MeetingRequest zoomRequest = MeetingRequest.builder()
+         MeetingRequest zoomRequest = MeetingRequest.builder()
                 .topic(request.getTitle())
                 .start_time(request.getDate())
                 .duration(request.getDuration())
                 .build();
 
         Map<String, Object> response = zoomAPI.createMeeting("joaodantas94@gmail.com", zoomRequest, "Bearer " + token); //todo remove hardcoded values
+        todo **/
+
+        // Get Organizer
+        User organizer = userUtils.getUserByBearer();
+
+        // Get Secretary
+        User secretary = userRepository.findById(request.getSecretaryId()).orElse(null);
 
         Meeting meeting = Meeting.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .date(request.getDate())
-                .startTime(request.getDate())
-                .endTime(request.getDate().plusMinutes(request.getDuration()))
-                .date(request.getDate())
-                .zoomLink((String) response.get("join_url"))
-                .zoomMeetingId((Long) response.get("id"))
-                .zoomPassword((String) response.get("password"))
-                //todo add user list
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .zoomLink("https://localhost.pt") //todo get from response
+                .zoomMeetingId(Long.valueOf("6125371537615")) //todo get from response
+                .zoomPassword("KLASJK@82iuh#molk") //todo get from response
+                .organizer(organizer)
+                .secretary(secretary)
+                .condominium(organizer.getCondominium())
+                .topics(meetingMapper.topics2MeetingTopics(request.getTopics()))
                 .build();
 
         /* for (User user : users) {

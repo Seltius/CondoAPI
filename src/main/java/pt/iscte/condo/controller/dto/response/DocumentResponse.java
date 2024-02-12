@@ -1,4 +1,4 @@
-package pt.iscte.condo.controller.response;
+package pt.iscte.condo.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

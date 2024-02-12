@@ -1,6 +1,7 @@
-package pt.iscte.condo.controller.request;
+package pt.iscte.condo.controller.dto.request;
 
 import lombok.*;
+import pt.iscte.condo.controller.dto.Topic;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,9 +15,10 @@ public class CreateMeetingRequest {
     private String title;
     private String description;
     private LocalDateTime date;
-    private String time;
-    private Integer duration;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private List<Integer> userIds;
-
+    private Integer secretaryId;
+    private List<Topic> topics;
 
 }

@@ -1,8 +1,8 @@
 package pt.iscte.condo.service;
 
-import pt.iscte.condo.controller.request.DocumentRequest;
-import pt.iscte.condo.controller.response.DocumentResponse;
-import pt.iscte.condo.controller.response.FileResponse;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.response.DocumentResponse;
+import pt.iscte.condo.controller.dto.response.FileResponse;
 
 import java.util.List;
 

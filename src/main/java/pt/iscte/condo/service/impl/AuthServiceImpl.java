@@ -6,10 +6,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pt.iscte.condo.controller.request.AuthenticationRequest;
-import pt.iscte.condo.controller.request.RegisterRequest;
-import pt.iscte.condo.controller.response.AuthenticationResponse;
-import pt.iscte.condo.controller.response.ValidateTokenResponse;
+import pt.iscte.condo.controller.dto.request.AuthenticationRequest;
+import pt.iscte.condo.controller.dto.request.RegisterRequest;
+import pt.iscte.condo.controller.dto.response.AuthenticationResponse;
+import pt.iscte.condo.controller.dto.response.ValidateTokenResponse;
 import pt.iscte.condo.domain.User;
 import pt.iscte.condo.enums.Role;
 import pt.iscte.condo.repository.UserRepository;

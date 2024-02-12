@@ -1,4 +1,4 @@
-package pt.iscte.condo.controller.request;
+package pt.iscte.condo.controller.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

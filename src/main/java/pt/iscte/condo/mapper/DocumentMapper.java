@@ -1,9 +1,9 @@
 package pt.iscte.condo.mapper;
 
 import org.mapstruct.Mapper;
-import pt.iscte.condo.controller.request.DocumentRequest;
-import pt.iscte.condo.controller.response.DocumentResponse;
-import pt.iscte.condo.controller.response.FileResponse;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.response.DocumentResponse;
+import pt.iscte.condo.controller.dto.response.FileResponse;
 import pt.iscte.condo.domain.Document;
 import pt.iscte.condo.domain.User;
 

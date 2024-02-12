@@ -1,6 +1,6 @@
 package pt.iscte.condo.service;
 
-import pt.iscte.condo.controller.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
 
 import java.util.Map;
 

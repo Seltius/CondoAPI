@@ -3,9 +3,9 @@ package pt.iscte.condo.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pt.iscte.condo.controller.request.DocumentRequest;
-import pt.iscte.condo.controller.response.DocumentResponse;
-import pt.iscte.condo.controller.response.FileResponse;
+import pt.iscte.condo.controller.dto.request.DocumentRequest;
+import pt.iscte.condo.controller.dto.response.DocumentResponse;
+import pt.iscte.condo.controller.dto.response.FileResponse;
 import pt.iscte.condo.service.DocumentService;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package pt.iscte.condo.controller.response;
+package pt.iscte.condo.controller.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SummarizeResponse {
+public class ValidateTokenResponse {
 
-    private String summary; //todo
+    private boolean isValid;
 
 }
