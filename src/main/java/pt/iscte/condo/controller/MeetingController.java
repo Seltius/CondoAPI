@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pt.iscte.condo.controller.dto.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.dto.request.CreateMeetingRequest;
-import pt.iscte.condo.domain.Meeting;
+import pt.iscte.condo.repository.entities.Meeting;
 import pt.iscte.condo.service.MeetingService;
 
 import java.util.List;

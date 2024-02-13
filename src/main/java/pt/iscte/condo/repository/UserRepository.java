@@ -1,7 +1,7 @@
 package pt.iscte.condo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pt.iscte.condo.domain.User;
+import pt.iscte.condo.repository.entities.User;
 
 import java.util.Optional;
 

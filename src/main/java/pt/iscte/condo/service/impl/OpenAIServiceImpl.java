@@ -7,16 +7,14 @@ import pt.iscte.condo.enums.OpenAIRole;
 import pt.iscte.condo.proxy.OpenAI;
 import pt.iscte.condo.proxy.dto.Content;
 import pt.iscte.condo.proxy.dto.ThreadMessage;
-import pt.iscte.condo.proxy.request.AddMessageRequest;
-import pt.iscte.condo.proxy.request.RunThreadRequest;
-import pt.iscte.condo.proxy.responses.GetMessagesResponse;
-import pt.iscte.condo.proxy.responses.GetThreadStatusResponse;
+import pt.iscte.condo.proxy.dto.request.AddMessageRequest;
+import pt.iscte.condo.proxy.dto.request.RunThreadRequest;
+import pt.iscte.condo.proxy.dto.response.GetMessagesResponse;
+import pt.iscte.condo.proxy.dto.response.GetThreadStatusResponse;
 import pt.iscte.condo.service.OpenAIService;
-import pt.iscte.condo.utils.RateLimitedQueue;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor

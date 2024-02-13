@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
-import pt.iscte.condo.domain.User;
+import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.impl.JwtServiceImpl;
 

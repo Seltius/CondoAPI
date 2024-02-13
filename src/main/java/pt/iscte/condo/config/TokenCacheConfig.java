@@ -8,8 +8,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pt.iscte.condo.proxy.request.AuthTokenRequest;
 import pt.iscte.condo.proxy.ZoomAPI;
+import pt.iscte.condo.proxy.dto.request.AuthTokenRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import pt.iscte.condo.config.OpenAIConfig;
-import pt.iscte.condo.proxy.request.AddMessageRequest;
-import pt.iscte.condo.proxy.request.CreateAssistantRequest;
-import pt.iscte.condo.proxy.request.RunThreadRequest;
-import pt.iscte.condo.proxy.responses.*;
+import pt.iscte.condo.proxy.dto.request.AddMessageRequest;
+import pt.iscte.condo.proxy.dto.request.CreateAssistantRequest;
+import pt.iscte.condo.proxy.dto.request.RunThreadRequest;
+import pt.iscte.condo.proxy.dto.response.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

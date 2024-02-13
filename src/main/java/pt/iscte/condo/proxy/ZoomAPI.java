@@ -2,8 +2,8 @@ package pt.iscte.condo.proxy;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-import pt.iscte.condo.proxy.request.AuthTokenRequest;
-import pt.iscte.condo.proxy.request.MeetingRequest;
+import pt.iscte.condo.proxy.dto.request.AuthTokenRequest;
+import pt.iscte.condo.proxy.dto.request.MeetingRequest;
 
 import java.util.Map;
 

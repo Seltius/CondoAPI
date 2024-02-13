@@ -2,7 +2,7 @@ package pt.iscte.condo.service;
 
 import pt.iscte.condo.controller.dto.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.dto.request.CreateMeetingRequest;
-import pt.iscte.condo.domain.Meeting;
+import pt.iscte.condo.repository.entities.Meeting;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package pt.iscte.condo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pt.iscte.condo.domain.Meeting;
+import pt.iscte.condo.repository.entities.Meeting;
 
 import java.util.List;
 

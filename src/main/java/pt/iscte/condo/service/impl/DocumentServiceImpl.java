@@ -1,6 +1,5 @@
 package pt.iscte.condo.service.impl;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
@@ -9,10 +8,10 @@ import org.springframework.web.server.ResponseStatusException;
 import pt.iscte.condo.controller.dto.request.DocumentRequest;
 import pt.iscte.condo.controller.dto.response.DocumentResponse;
 import pt.iscte.condo.controller.dto.response.FileResponse;
-import pt.iscte.condo.domain.Document;
-import pt.iscte.condo.domain.User;
+import pt.iscte.condo.repository.entities.Document;
+import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.enums.Role;
-import pt.iscte.condo.mapper.DocumentMapper;
+import pt.iscte.condo.service.mapper.DocumentMapper;
 import pt.iscte.condo.repository.DocumentRepository;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.DocumentService;

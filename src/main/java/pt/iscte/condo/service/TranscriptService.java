@@ -1,6 +1,6 @@
 package pt.iscte.condo.service;
 
-import pt.iscte.condo.domain.Transcript;
+import pt.iscte.condo.repository.entities.Transcript;
 
 import java.util.Map;
 

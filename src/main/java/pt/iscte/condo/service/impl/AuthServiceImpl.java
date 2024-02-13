@@ -10,7 +10,7 @@ import pt.iscte.condo.controller.dto.request.AuthenticationRequest;
 import pt.iscte.condo.controller.dto.request.RegisterRequest;
 import pt.iscte.condo.controller.dto.response.AuthenticationResponse;
 import pt.iscte.condo.controller.dto.response.ValidateTokenResponse;
-import pt.iscte.condo.domain.User;
+import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.enums.Role;
 import pt.iscte.condo.repository.UserRepository;
 import pt.iscte.condo.service.AuthService;
