@@ -7,13 +7,13 @@ import org.springframework.web.server.ResponseStatusException;
 import pt.iscte.condo.config.TokenCacheConfig;
 import pt.iscte.condo.controller.dto.request.AddUsersToMeetingRequest;
 import pt.iscte.condo.controller.dto.request.CreateMeetingRequest;
-import pt.iscte.condo.repository.entities.Meeting;
-import pt.iscte.condo.repository.entities.User;
-import pt.iscte.condo.service.mapper.MeetingMapper;
 import pt.iscte.condo.proxy.ZoomAPI;
 import pt.iscte.condo.repository.MeetingRepository;
 import pt.iscte.condo.repository.UserRepository;
+import pt.iscte.condo.repository.entities.Meeting;
+import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.service.MeetingService;
+import pt.iscte.condo.service.mapper.MeetingMapper;
 import pt.iscte.condo.utils.UserUtils;
 
 import java.util.List;
@@ -59,13 +59,13 @@ public class MeetingServiceImpl implements MeetingService {
                 .date(request.getDate())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
-                .zoomLink("https://localhost.pt") //todo get from response
-                .zoomMeetingId(Long.valueOf("6125371537615")) //todo get from response
-                .zoomPassword("KLASJK@82iuh#molk") //todo get from response
+                .link("https://localhost.pt") //todo get from response
+                .accessId(Long.valueOf("6125371537615")) //todo get from response
+                .password("KLASJK@82iuh#molk") //todo get from response
                 .organizer(organizer)
                 .secretary(secretary)
                 .condominium(organizer.getCondominium())
-                .topics(meetingMapper.topics2MeetingTopics(request.getTopics()))
+                .topics(meetingMapper.topics2MeetingTopics(request.getTopics())) //todo this is not working
                 .build();
 
         /* for (User user : users) {

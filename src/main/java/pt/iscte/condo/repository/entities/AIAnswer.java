@@ -20,9 +20,9 @@ public class AIAnswer {
     @Column(nullable = false)
     private String answer;
 
-    @ManyToOne()
-    @JoinColumn(name = "question_id", nullable = false)
-    private AIQuestion question;
+    @OneToOne()
+    @JoinColumn(name = "topic_id", nullable = false)
+    private MeetingTopic topic;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "transcript_id", referencedColumnName = "id")

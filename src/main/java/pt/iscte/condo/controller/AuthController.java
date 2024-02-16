@@ -9,7 +9,6 @@ import pt.iscte.condo.controller.dto.request.RegisterRequest;
 import pt.iscte.condo.controller.dto.response.AuthenticationResponse;
 import pt.iscte.condo.controller.dto.response.ValidateTokenResponse;
 import pt.iscte.condo.service.AuthService;
-import pt.iscte.condo.service.TranscriptService;
 
 @RestController
 @RequiredArgsConstructor

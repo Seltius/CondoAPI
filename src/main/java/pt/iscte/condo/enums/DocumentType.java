@@ -4,6 +4,7 @@ public enum DocumentType {
 
     INVOICE,
     MINUTE,
+    TRANSCRIPT,
     BUDGET
 
 }

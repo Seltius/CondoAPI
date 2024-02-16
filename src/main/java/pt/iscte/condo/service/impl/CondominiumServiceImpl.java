@@ -8,15 +8,15 @@ import pt.iscte.condo.controller.dto.request.CreateCondominiumRequest;
 import pt.iscte.condo.controller.dto.request.InviteCondominiumMemberRequest;
 import pt.iscte.condo.controller.dto.request.UpdateCondominiumRequest;
 import pt.iscte.condo.controller.dto.response.GetCondominiumResponse;
-import pt.iscte.condo.repository.entities.Condominium;
-import pt.iscte.condo.repository.entities.CondominiumInvitation;
-import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.enums.InvitationStatus;
-import pt.iscte.condo.service.mapper.CondominiumMapper;
 import pt.iscte.condo.repository.CondominiumInvitationRepository;
 import pt.iscte.condo.repository.CondominiumRepository;
 import pt.iscte.condo.repository.UserRepository;
+import pt.iscte.condo.repository.entities.Condominium;
+import pt.iscte.condo.repository.entities.CondominiumInvitation;
+import pt.iscte.condo.repository.entities.User;
 import pt.iscte.condo.service.CondominiumService;
+import pt.iscte.condo.service.mapper.CondominiumMapper;
 import pt.iscte.condo.utils.UserUtils;
 
 
@@ -53,7 +53,12 @@ public class CondominiumServiceImpl implements CondominiumService {
         Condominium condominium = condominiumRepository.findById(request.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Condominium not found"));
 
-        condominiumMapper.updateEntity(request, condominium);
+        //todo refactor
+        condominium.setName(request.getName());
+        condominium.setAddress(request.getAddress());
+        condominium.setAddress(request.getParish());
+        condominium.setCountry(request.getCounty());
+
         condominiumRepository.save(condominium);
     }
 

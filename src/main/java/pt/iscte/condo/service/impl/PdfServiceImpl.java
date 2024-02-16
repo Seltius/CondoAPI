@@ -6,18 +6,31 @@ import org.jodconverter.local.filter.text.TextReplacerFilter;
 import org.jodconverter.local.office.LocalOfficeManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import pt.iscte.condo.repository.entities.Condominium;
+import pt.iscte.condo.repository.entities.Meeting;
+import pt.iscte.condo.repository.entities.MeetingTopic;
 import pt.iscte.condo.service.PdfService;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @Service
 public class PdfServiceImpl implements PdfService {
     @Override
-    public byte[] generateMinute(Map<String, String> data) throws Exception {
+    public byte[] generateMinute(List<MeetingTopic> topics, Map<String, String> meetingTopicsDescription, Condominium condominium, Meeting meeting) throws Exception {
+        String topicsConcat = "";
+        String topicsDescriptionConcat = "";
+
+        for (MeetingTopic topic : topics) {
+            topicsConcat += topic.getTopic() + "\n";
+        }
+
+        for (Map.Entry<String, String> entry : meetingTopicsDescription.entrySet()) {
+            topicsDescriptionConcat += entry.getValue() + "\n";
+        }
 
         // Load document template
         File file = new ClassPathResource("templates/minute.odt").getFile();
@@ -32,19 +45,13 @@ public class PdfServiceImpl implements PdfService {
                 .build();
 
         // Create arrays for search and replacement strings
-        String[] searchList = new String[data.size()];
-        String[] replacementList = new String[data.size()];
-
-        // Fill the arrays with data from the map
-        Iterator<Map.Entry<String, String>> iterator = data.entrySet().iterator();
-        IntStream.range(0, data.size()).forEach(i -> {
-            Map.Entry<String, String> entry = iterator.next();
-            searchList[i] = entry.getKey();
-            replacementList[i] = entry.getValue();
-        });
+        Map<String, String> replacements = getStringStringMap(condominium, meeting, topicsConcat, topicsDescriptionConcat);
 
         // Create a new TextReplacerFilter
-        TextReplacerFilter textReplacerFilter = new TextReplacerFilter(searchList, replacementList);
+        TextReplacerFilter textReplacerFilter = new TextReplacerFilter(
+                replacements.keySet().toArray(new String[0]),
+                replacements.values().toArray(new String[0])
+        );
 
         try {
             officeManager.start();
@@ -70,5 +77,21 @@ public class PdfServiceImpl implements PdfService {
         output.delete();
 
         return fileContent;
+    }
+
+    private static Map<String, String> getStringStringMap(Condominium condominium, Meeting meeting, String topics, String topicsDescription) {
+        Map<String, String> replacements = new HashMap<>();
+        replacements.put("condominiumName", condominium.getName());
+        replacements.put("condominiumAddress", condominium.getAddress());
+        replacements.put("meetingDay", String.valueOf(meeting.getDate().getDayOfMonth()));
+        replacements.put("meetingHour", String.valueOf(meeting.getStartTime().getHour()));
+        replacements.put("condominiumParish", condominium.getParish());
+        replacements.put("condominiumCounty", condominium.getCountry()); //todo county instead of country
+        replacements.put("meetingLink", meeting.getLink());
+        replacements.put("meetingTopics", topics);
+        replacements.put("meetingOrganizer", meeting.getOrganizer().getName());
+        replacements.put("meetingSecretary", meeting.getSecretary().getName());
+        replacements.put("meetingAiTopicsDescription", topicsDescription);
+        return replacements;
     }
 }

@@ -31,11 +31,11 @@ public class Meeting {
 
     private LocalDateTime endTime;
 
-    private String zoomLink;
+    private String link;
 
-    private Long zoomMeetingId;
+    private Long accessId;
 
-    private String zoomPassword;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "organizerId", nullable = false)
