@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -28,6 +30,9 @@ public class Condominium {
 
     @Column(nullable = false)
     private String country;
+
+    @OneToMany(mappedBy = "condominium")
+    private List<Apartment> apartments;
 
     @OneToOne(mappedBy = "condominium")
     private User user;

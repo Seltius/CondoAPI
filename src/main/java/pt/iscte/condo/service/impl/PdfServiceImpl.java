@@ -1,85 +1,89 @@
 package pt.iscte.condo.service.impl;
 
-import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
-import org.jodconverter.local.LocalConverter;
-import org.jodconverter.local.filter.text.TextReplacerFilter;
-import org.jodconverter.local.office.LocalOfficeManager;
-import org.springframework.core.io.ClassPathResource;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import pt.iscte.condo.controller.dto.Topic;
 import pt.iscte.condo.repository.entities.Condominium;
 import pt.iscte.condo.repository.entities.Meeting;
-import pt.iscte.condo.repository.entities.MeetingTopic;
 import pt.iscte.condo.service.PdfService;
+import pt.iscte.condo.service.dto.FractionInfo;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class PdfServiceImpl implements PdfService {
-    @Override
-    public byte[] generateMinute(List<MeetingTopic> topics, Map<String, String> meetingTopicsDescription, Condominium condominium, Meeting meeting) throws Exception {
-        String topicsConcat = "";
+
+    public byte[] generateMinute(List<Topic> topics, List<FractionInfo> fractionInfos, Map<String, String> aiSummarizedTopics, Condominium condominium, Meeting meeting) throws Exception {
+        byte[] pdfBytes;
         String topicsDescriptionConcat = "";
 
-        for (MeetingTopic topic : topics) {
-            topicsConcat += topic.getTopic() + "\n";
-        }
-
-        for (Map.Entry<String, String> entry : meetingTopicsDescription.entrySet()) {
+        for (Map.Entry<String, String> entry : aiSummarizedTopics.entrySet()) {
             topicsDescriptionConcat += entry.getValue() + "\n";
         }
 
-        // Load document template
-        File file = new ClassPathResource("templates/minute.odt").getFile();
+        // Prepare data model
+        Map<String, Object> data = new HashMap<>(getReplacements(condominium, meeting, topicsDescriptionConcat));
+        data.put("topics", topics);
+        data.put("fractions", fractionInfos);
 
-        // Convert to PDF
-        File output = File.createTempFile("minute", ".pdf");
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        templateResolver.setTemplateMode(TemplateMode.HTML);
 
-        // Start an office manager
-        LocalOfficeManager officeManager = LocalOfficeManager.builder()
-                .officeHome("C:\\Program Files (x86)\\OpenOffice 4")
-                .install()
-                .build();
+        TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
 
-        // Create arrays for search and replacement strings
-        Map<String, String> replacements = getStringStringMap(condominium, meeting, topicsConcat, topicsDescriptionConcat);
+        Context context = new Context();
+        context.setVariables(data);
+        String document = templateEngine.process("minute", context);
 
-        // Create a new TextReplacerFilter
-        TextReplacerFilter textReplacerFilter = new TextReplacerFilter(
-                replacements.keySet().toArray(new String[0]),
-                replacements.values().toArray(new String[0])
-        );
-
+        // Write workbook to byte array
         try {
-            officeManager.start();
-
-            LocalConverter converter = LocalConverter.builder()
-                    .officeManager(officeManager)
-                    .filterChain(textReplacerFilter)
-                    .build();
-
-            // Convert
-            converter.convert(file)
-                    .as(DefaultDocumentFormatRegistry.ODT)
-                    .to(output)
-                    .as(DefaultDocumentFormatRegistry.PDF)
-                    .execute();
-
-        } finally {
-            // Stop the office manager
-            officeManager.stop();
+            pdfBytes = generatePdfFromHtml(document);
+        } catch (IOException e) {
+            throw new Exception("Error writing PDF to byte array", e);
         }
+        return pdfBytes;
 
-        byte[] fileContent = Files.readAllBytes(output.toPath());
-        output.delete();
-
-        return fileContent;
     }
 
-    private static Map<String, String> getStringStringMap(Condominium condominium, Meeting meeting, String topics, String topicsDescription) {
+    private byte[] generatePdfFromHtml(String html) throws Exception {
+        File tempFile = File.createTempFile("generated_pdf_", ".pdf");
+        tempFile.deleteOnExit();
+
+        ITextRenderer renderer = new ITextRenderer();
+        renderer.setDocumentFromString(html);
+        renderer.layout();
+        // Render to the temporary file
+        OutputStream outputStream = new FileOutputStream(tempFile);
+        renderer.createPDF(outputStream);
+        outputStream.close();
+
+        // Read the temporary file into a byte array
+        byte[] pdfBytes = Files.readAllBytes(tempFile.toPath());
+
+        // Delete the temporary file
+        tempFile.delete();
+        outputStream.close();
+
+        return pdfBytes;
+    }
+
+    private static Map<String, String> getReplacements(Condominium condominium, Meeting meeting, String topicsDescription) {
         Map<String, String> replacements = new HashMap<>();
         replacements.put("condominiumName", condominium.getName());
         replacements.put("condominiumAddress", condominium.getAddress());
@@ -88,10 +92,10 @@ public class PdfServiceImpl implements PdfService {
         replacements.put("condominiumParish", condominium.getParish());
         replacements.put("condominiumCounty", condominium.getCountry()); //todo county instead of country
         replacements.put("meetingLink", meeting.getLink());
-        replacements.put("meetingTopics", topics);
         replacements.put("meetingOrganizer", meeting.getOrganizer().getName());
         replacements.put("meetingSecretary", meeting.getSecretary().getName());
         replacements.put("meetingAiTopicsDescription", topicsDescription);
         return replacements;
     }
+
 }

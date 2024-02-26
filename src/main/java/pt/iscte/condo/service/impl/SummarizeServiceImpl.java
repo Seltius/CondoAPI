@@ -3,6 +3,7 @@ package pt.iscte.condo.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
+import pt.iscte.condo.controller.dto.Topic;
 import pt.iscte.condo.controller.dto.request.SummarizeRequest;
 import pt.iscte.condo.enums.DocumentType;
 import pt.iscte.condo.enums.TranscriptStatus;
@@ -13,6 +14,8 @@ import pt.iscte.condo.repository.entities.*;
 import pt.iscte.condo.service.PdfService;
 import pt.iscte.condo.service.SummarizeService;
 import pt.iscte.condo.service.TranscriptService;
+import pt.iscte.condo.service.dto.FractionInfo;
+import pt.iscte.condo.service.mapper.SummarizeMapper;
 import pt.iscte.condo.utils.DocumentUtils;
 import pt.iscte.condo.utils.UserUtils;
 
@@ -33,6 +36,7 @@ public class SummarizeServiceImpl implements SummarizeService {
     // UTIL
     private final UserUtils userUtils;
     private final DocumentUtils documentUtils;
+    private final SummarizeMapper summarizeMapper;
 
     // SERVICE
     private final TranscriptService transcriptService;
@@ -46,6 +50,8 @@ public class SummarizeServiceImpl implements SummarizeService {
                 .orElseThrow(() -> new NoSuchElementException("Meeting not found"));
         List<MeetingTopic> meetingTopics = meeting.getTopics();
         Condominium condominium = user.getCondominium();
+        List<Topic> topics = summarizeMapper.mapTopicEntityList2Topic(meetingTopics);
+        List<FractionInfo> fractionInfoList = summarizeMapper.mapApartmentEntity2Apartment(condominium.getApartments());
 
         validateDocument(document);
 
@@ -55,7 +61,7 @@ public class SummarizeServiceImpl implements SummarizeService {
         Map<String,String> meetingTopicsDescription = transcriptService.processTranscript(getTranscript(text, condominium), meetingTopics);
         // todo topic entity doesnt have stored ai answers
         try {
-            byte[] pdfData = pdfService.generateMinute(meetingTopics, meetingTopicsDescription, condominium, meeting);
+            byte[] pdfData = pdfService.generateMinute(topics, fractionInfoList, meetingTopicsDescription, condominium, meeting);
             saveDocument(pdfData, user, user.getCondominium());
         } catch (Exception e) {
             throw new RuntimeException("PDF File generation failed", e.getCause());

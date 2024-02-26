@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <style>
+            html, body {
+                height: 100%; /* Ensure full viewport height */
+                margin: 0;
+            }
+
+            body {
+                display: flex; /* Use flexbox for layout */
+                flex-direction: column;
+            }
+
+            header, footer {
+                width: 100%; /* Full width of the viewport */
+            }
+
+            header {
+                top: 0; /* Align header to the top */
+                padding: 1rem; /* Add some padding */
+                text-align: center;
+            }
+
+            footer {
+                position: fixed;
+                bottom: 0; /* Align footer to the bottom */
+                padding: 1rem; /* Add some padding */
+                flex-grow: 0; /* Do not grow to take up remaining space */
+            }
+
+            main { /* Container for main content */
+                flex: 1; /* Take up remaining space */
+                padding: 1rem; /* Add some padding */
+            }
+
+            #page-number::after {
+                counter-increment: page;
+                counter-reset: page 1;
+                content: counter(page);
+            }
+
+            #page-count::after {
+                content: counter(pages);
+            }
+
+            .footer-left {
+                float: left;
+            }
+
+            .footer-right {
+                float: right;
+            }
+
+            ul {
+                line-height: 1.2;
+            }
+
+            table {
+                width: 100%;
+            }
+            table, th, td {
+                text-align: center;
+                border: 1px solid black;
+            }
+
+        </style>
+    </head>
+    <body>
+    <header>
+        <p th:text="${condominiumName}"></p>
+        <p th:text="${condominiumAddress}"></p>
+        <div style="flex-grow: 0;"></div>
+    </header>
+
+    <main>
+        <div>
+            <h1>Assembleia Geral</h1>
+
+            <h2>ATA NÚMERO <span th:text="${minuteNumber}"></span></h2>
+
+            <p>No dia <span th:text="${meetingDay}"></span>, reuniu pelas <span th:text="${meetingHour}"></span> horas, a Assembleia Geral Ordinária
+                de Condóminos do prédio constituído em propriedade horizontal, sito na <span th:text="${condominiumAddress}"></span>, freguesia de
+                <span th:text="${condominiumParish}"></span>, concelho de <span th:text="${condominiumCounty}"></span> realizada online atravês da
+                aplicação Zoom, na sequência do articulado no Artigo 1*-A n*.1 do Regime da Propriedade Horizontal, com o link:</p>
+            <span th:text="${meetingLink}"></span>
+
+            <p>
+                para deliberar sobre a seguinte ordem de trabalhos:
+            </p>
+            <ul th:each="topic : ${topics}">
+                <li th:text="${topic.topic}"></li>
+            </ul>
+
+            <p>
+                Foi constituida a mesa da assembleia geral presidida por <span th:text="${meetingOrganizer}"></span> e secretariada por
+                <span th:text="${meetingSecretary}"></span> tendo verificado que a assembleia foi regularmente convocada através do envio de correio eletrónico, conforme
+                Artigo 1432* n*. 2 do Código Civil a todos os proprietários e aviso convocatório no hall de entrada do prédio.
+            </p>
+
+            <p>
+                Iniciada a assembleia pelas <span th:text="${meetingHour}"></span> horas e passando à discussão dos pontos
+                estipulados pela ordem de trabalhos, discutiu-se o seguinte:
+            </p>
+            <span th:text="${meetingAiTopicsDescription}"></span>
+
+            <p>
+                Estavam presentes ou representados os condóminos que constam e assinaram a lista de presençsas e registo de
+                participantes da reunião, proprietários das frações:
+            </p>
+            <table>
+                <tr>
+                    <th>Fracção</th>
+                    <th>Condomino</th>
+                    <th>Assinatura</th>
+                </tr>
+                <tr th:each="fraction : ${fractions}">
+                    <td th:text="${fraction.fraction}">1</td>
+                    <td th:text="${fraction.fractionOwnerName}">João Silva</td>
+                    <td>______________________</td>
+                </tr>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-left">PROCESSADO AUTOMATICAMENTE</div>
+        <div class="footer-pagination footer-right">
+            Página <span id="page-number"></span> de <span id="page-count"></span>
+        </div>
+    </footer>
+    </body>
+</html>

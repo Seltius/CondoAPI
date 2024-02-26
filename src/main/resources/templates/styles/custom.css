@@ -1,0 +1,54 @@
+html, body {
+    height: 100%; /* Ensure full viewport height */
+    margin: 0;
+}
+
+body {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column;
+}
+
+header, footer {
+    width: 100%; /* Full width of the viewport */
+}
+
+header {
+    top: 0; /* Align header to the top */
+    padding: 1rem; /* Add some padding */
+    text-align: center;
+}
+
+footer {
+    position: fixed;
+    bottom: 0; /* Align footer to the bottom */
+    padding: 1rem; /* Add some padding */
+    flex-grow: 0; /* Do not grow to take up remaining space */
+}
+
+main { /* Container for main content */
+    flex: 1; /* Take up remaining space */
+    padding: 1rem; /* Add some padding */
+}
+
+#page-number::after {
+    counter-increment: page;
+    counter-reset: page 1;
+    content: counter(page);
+}
+
+#page-count::after {
+    content: counter(pages);
+}
+
+.footer-left {
+    float: left;
+}
+
+.footer-right {
+    float: right;
+}
+
+.list-style-disc {
+    list-style: disc;
+    padding-left: 1em;
+}
