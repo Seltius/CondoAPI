@@ -29,7 +29,7 @@ public class Condominium {
     private String parish;
 
     @Column(nullable = false)
-    private String country;
+    private String county;
 
     @OneToMany(mappedBy = "condominium")
     private List<Apartment> apartments;

@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +29,10 @@ public class PdfServiceImpl implements PdfService {
 
     public byte[] generateMinute(List<Topic> topics, List<FractionInfo> fractionInfos, Map<String, String> aiSummarizedTopics, Condominium condominium, Meeting meeting) throws Exception {
         byte[] pdfBytes;
-        String topicsDescriptionConcat = "";
-
-        for (Map.Entry<String, String> entry : aiSummarizedTopics.entrySet()) {
-            topicsDescriptionConcat += entry.getValue() + "\n";
-        }
+        List<String> topicsDescription = Arrays.asList(aiSummarizedTopics.values().toArray(new String[0]));
 
         // Prepare data model
-        Map<String, Object> data = new HashMap<>(getReplacements(condominium, meeting, topicsDescriptionConcat));
-        data.put("topics", topics);
-        data.put("fractions", fractionInfos);
+        Map<String, Object> data = new HashMap<>(getReplacements(condominium, meeting, topics, topicsDescription, fractionInfos));
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("templates/");
@@ -83,18 +78,20 @@ public class PdfServiceImpl implements PdfService {
         return pdfBytes;
     }
 
-    private static Map<String, String> getReplacements(Condominium condominium, Meeting meeting, String topicsDescription) {
-        Map<String, String> replacements = new HashMap<>();
+    private static Map<String, Object> getReplacements(Condominium condominium, Meeting meeting, List<Topic> topics, List<String> topicsDescription, List<FractionInfo> fractionInfos) {
+        Map<String, Object> replacements = new HashMap<>();
         replacements.put("condominiumName", condominium.getName());
         replacements.put("condominiumAddress", condominium.getAddress());
         replacements.put("meetingDay", String.valueOf(meeting.getDate().getDayOfMonth()));
         replacements.put("meetingHour", String.valueOf(meeting.getStartTime().getHour()));
         replacements.put("condominiumParish", condominium.getParish());
-        replacements.put("condominiumCounty", condominium.getCountry()); //todo county instead of country
+        replacements.put("condominiumCounty", condominium.getCounty());
         replacements.put("meetingLink", meeting.getLink());
         replacements.put("meetingOrganizer", meeting.getOrganizer().getName());
         replacements.put("meetingSecretary", meeting.getSecretary().getName());
-        replacements.put("meetingAiTopicsDescription", topicsDescription);
+        replacements.put("topics", topics);
+        replacements.put("topicsDescription", topicsDescription);
+        replacements.put("fractions", fractionInfos);
         return replacements;
     }
 

@@ -57,7 +57,7 @@ public class CondominiumServiceImpl implements CondominiumService {
         condominium.setName(request.getName());
         condominium.setAddress(request.getAddress());
         condominium.setAddress(request.getParish());
-        condominium.setCountry(request.getCounty());
+        condominium.setCounty(request.getCounty());
 
         condominiumRepository.save(condominium);
     }

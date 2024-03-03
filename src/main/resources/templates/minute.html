@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
-    <head>
+    <head title="Minute">
         <style>
             html, body {
                 height: 100%; /* Ensure full viewport height */
@@ -56,78 +56,110 @@
                 line-height: 1.2;
             }
 
+            ul li {
+                margin-bottom: 0.5rem;
+            }
+
             table {
                 width: 100%;
+                page-break-inside: avoid;
             }
             table, th, td {
                 text-align: center;
                 border: 1px solid black;
             }
 
+            h1 {
+                font-size: 18px;
+                text-align: center;
+            }
+
+            h2 {
+                font-size: 16px;
+                text-align: center;
+            }
+
+            .signature {
+                margin-top: 2rem;
+                width: 200px;
+                text-align: center;
+            }
+
+            .signature-line {
+                width: 100%;
+                border-top: 1px solid black;
+            }
+
+            .bold-paragraph {
+                font-weight: bold;
+            }
+
         </style>
+        <title></title>
     </head>
     <body>
-    <header>
-        <p th:text="${condominiumName}"></p>
-        <p th:text="${condominiumAddress}"></p>
-        <div style="flex-grow: 0;"></div>
-    </header>
+        <header>
+            <span th:text="${condominiumName}"></span>
+            <span th:text="${condominiumAddress}"></span>
+        </header>
 
-    <main>
-        <div>
-            <h1>Assembleia Geral</h1>
+        <main>
+            <div>
+                <h1>Assembleia Geral</h1>
+                <h2>ATA NÚMERO <span th:text="${minuteNumber}"></span></h2>
 
-            <h2>ATA NÚMERO <span th:text="${minuteNumber}"></span></h2>
+                <p>No dia <span th:text="${meetingDay}"></span>, reuniu pelas <span th:text="${meetingHour}"></span> horas, a Assembleia Geral Ordinária
+                    de Condóminos do prédio constituído em propriedade horizontal, sito na <span th:text="${condominiumAddress}"></span>, freguesia de
+                    <span th:text="${condominiumParish}"></span>, concelho de <span th:text="${condominiumCounty}"></span> realizada online atravês da
+                    aplicação Zoom, na sequência do articulado no Artigo 1*-A n*.1 do Regime da Propriedade Horizontal, com o link:</p>
+                <span th:text="${meetingLink}"></span>
+                <p>
+                    para deliberar sobre a seguinte ordem de trabalhos:
+                </p>
+                <ul th:each="topic : ${topics}">
+                    <li th:text="${topic.topic}"></li>
+                </ul>
+                <p>
+                    Foi constituida a mesa da assembleia geral presidida por <span th:text="${meetingOrganizer}"></span> e secretariada por
+                    <span th:text="${meetingSecretary}"></span> tendo verificado que a assembleia foi regularmente convocada através do envio de correio eletrónico, conforme
+                    Artigo 1432* n*. 2 do Código Civil a todos os proprietários e aviso convocatório no hall de entrada do prédio.
+                </p>
+                <p>
+                    Iniciada a assembleia pelas <span th:text="${meetingHour}"></span> horas e passando à discussão dos pontos
+                    estipulados pela ordem de trabalhos, discutiu-se o seguinte:
+                </p>
+                <div th:each="description : ${topicsDescription}">
+                    <p th:text="${description}"></p>
+                </div>
+                <div class="signature">
+                    <p>A Administração,</p>
+                    <br/>
+                    <div class="signature-line"></div>
+                </div>
+                <p>
+                    Estavam presentes ou representados os condóminos que constam e assinaram a lista de presençsas e registo de
+                    participantes da reunião, proprietários das frações:
+                </p>
+                <table>
+                    <tr>
+                        <th>Fracção</th>
+                        <th>Condómino</th>
+                        <th>Assinatura</th>
+                    </tr>
+                    <tr th:each="fraction : ${fractions}">
+                        <td th:text="${fraction.fraction}"></td>
+                        <td th:text="${fraction.fractionOwnerName}"></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </main>
 
-            <p>No dia <span th:text="${meetingDay}"></span>, reuniu pelas <span th:text="${meetingHour}"></span> horas, a Assembleia Geral Ordinária
-                de Condóminos do prédio constituído em propriedade horizontal, sito na <span th:text="${condominiumAddress}"></span>, freguesia de
-                <span th:text="${condominiumParish}"></span>, concelho de <span th:text="${condominiumCounty}"></span> realizada online atravês da
-                aplicação Zoom, na sequência do articulado no Artigo 1*-A n*.1 do Regime da Propriedade Horizontal, com o link:</p>
-            <span th:text="${meetingLink}"></span>
-
-            <p>
-                para deliberar sobre a seguinte ordem de trabalhos:
-            </p>
-            <ul th:each="topic : ${topics}">
-                <li th:text="${topic.topic}"></li>
-            </ul>
-
-            <p>
-                Foi constituida a mesa da assembleia geral presidida por <span th:text="${meetingOrganizer}"></span> e secretariada por
-                <span th:text="${meetingSecretary}"></span> tendo verificado que a assembleia foi regularmente convocada através do envio de correio eletrónico, conforme
-                Artigo 1432* n*. 2 do Código Civil a todos os proprietários e aviso convocatório no hall de entrada do prédio.
-            </p>
-
-            <p>
-                Iniciada a assembleia pelas <span th:text="${meetingHour}"></span> horas e passando à discussão dos pontos
-                estipulados pela ordem de trabalhos, discutiu-se o seguinte:
-            </p>
-            <span th:text="${meetingAiTopicsDescription}"></span>
-
-            <p>
-                Estavam presentes ou representados os condóminos que constam e assinaram a lista de presençsas e registo de
-                participantes da reunião, proprietários das frações:
-            </p>
-            <table>
-                <tr>
-                    <th>Fracção</th>
-                    <th>Condómino</th>
-                    <th>Assinatura</th>
-                </tr>
-                <tr th:each="fraction : ${fractions}">
-                    <td th:text="${fraction.fraction}">1</td>
-                    <td th:text="${fraction.fractionOwnerName}">João Silva</td>
-                    <td></td>
-                </tr>
-            </table>
-        </div>
-    </main>
-
-    <footer>
-        <div class="footer-left">PROCESSADO AUTOMATICAMENTE</div>
-        <div class="footer-pagination footer-right">
-            Página <span id="page-number"></span> de <span id="page-count"></span>
-        </div>
-    </footer>
+        <footer>
+            <div class="footer-left bold-paragraph">PROCESSADO AUTOMATICAMENTE</div>
+            <div class="footer-pagination footer-right">
+                Página <span id="page-number"></span> de <span id="page-count"></span>
+            </div>
+        </footer>
     </body>
 </html>

@@ -24,7 +24,7 @@ public class Apartment {
     @JoinColumn(name = "condominiumId")
     private Condominium condominium;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
 }
