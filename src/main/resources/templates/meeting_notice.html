@@ -130,13 +130,13 @@
         <main>
             <div>
                 <br/>
-                <h1>Assembleia Geral</h1>
-                <h2>ATA NÚMERO __<span th:text="${minuteNumber}"></span></h2>
+                <h1>CONVOCATÓRIA</h1>
 
-                <p>No dia <span th:text="${meetingDay}"></span>, reuniu pelas <span th:text="${meetingHour}"></span> horas, a Assembleia Geral Ordinária
-                    de Condóminos do prédio constituído em propriedade horizontal, sito na <span th:text="${condominiumAddress}"></span>, freguesia de
-                    <span th:text="${condominiumParish}"></span>, concelho de <span th:text="${condominiumCounty}"></span> realizada online atravês da
-                    aplicação Zoom, na sequência do articulado no Artigo 1*-A n*.1 do Regime da Propriedade Horizontal, com o link:</p>
+                <p>Nos termos e para os efeitos do disposto nos artigos 1431º. e 1432º do Código Civil, convoco os Senhores Condóminos para a
+                    Assembleia de Condóminos do edifício, constituído no regime da propriedade horizontal, sito na <span th:text="${condominiumAddress}"></span>,
+                    a realizar no próximo dia <span th:text="${meetingDate}"></span>, pelas <span th:text="${meetingHour}"></span>, que se realizará online atravês da
+                    aplicação Zoom, na sequência do articulado no Artigo 1*-A n*.1 do Regime da Propriedade Horizontal, com o link:
+                </p>
                 <span th:text="${meetingLink}"></span>
                 <p>
                     para deliberar sobre a seguinte ordem de trabalhos:
@@ -144,36 +144,22 @@
                 <ol>
                     <li th:each="topic : ${topics}" th:text="${topic.topic}"></li>
                 </ol>
-                <p>
-                    Foi constituida a mesa da assembleia geral presidida por <span th:text="${meetingOrganizer}"></span> e secretariada por
-                    <span th:text="${meetingSecretary}"></span> tendo verificado que a assembleia foi regularmente convocada através do envio de correio eletrónico, conforme
-                    Artigo 1432* n*. 2 do Código Civil a todos os proprietários e aviso convocatório no hall de entrada do prédio.
+                <p th:if="${extraMeetingDate != null}">
+                    Caso nos referidos dia, hora e local não se encontrem presentes ou representados o número de condóminos que representem
+                    pelo menos mais de metade do valor total do prédio, expresso em percentagem, fica desde já convocada nova reunião de
+                    Assembleia de Condóminos para o dia <span th:text="${extraMeetingDate}"></span>, no mesmo local pelas <span th:text="${extraMeetingHour}"></span>.
+                </p>
+                <p>Neste caso, a assembleia dará início aos trabalhos com os condóminos presentes, desde que os mesmos representem, pelo
+                    menos, um quarto do valor total do prédio.
                 </p>
                 <p>
-                    Iniciada a assembleia pelas <span th:text="${meetingHour}"></span> horas e passando à discussão dos pontos
-                    estipulados pela ordem de trabalhos, discutiu-se o seguinte:
+                    Mais se informa que, para qualquer deliberação sobre os assuntos na Ordem de Trabalhos, será necessário a aprovação
+                    por unanimidade dos votos dos condóminos presentes ou representados, desde que representem, pelo menos, dois terços do valor
+                    total do prédio.
                 </p>
-                <div th:each="description : ${topicsDescription}">
-                    <p th:text="${description}"></p>
-                </div>
-                <p class="break">
-                    Estavam presentes ou representados os condóminos que constam e assinaram a lista de presençsas e registo de
-                    participantes da reunião, proprietários das frações:
+                <p>
+                    Por últimos, relembro que o condómino poderá fazer-se representar na assembleia por um procurador.
                 </p>
-                <br/>
-                <table>
-                    <tr>
-                        <th>Fracção</th>
-                        <th>Condómino</th>
-                        <th>Assinatura</th>
-                    </tr>
-                    <tr th:each="fraction : ${fractions}">
-                        <td th:text="${fraction.fraction}"></td>
-                        <td th:text="${fraction.fractionOwnerName}"></td>
-                        <td></td>
-                    </tr>
-                </table>
-
                 <div th:if="${!#lists.isEmpty(attachmentsNames)}">
                     <p class="bold-paragraph">
                         Anexos
@@ -182,6 +168,8 @@
                         <li th:each="attachmentName : ${attachmentsNames}" th:text="${attachmentName}"></li>
                     </ul>
                 </div>
+                <br/>
+                <p><span th:text="${condominiumCounty}"></span>, <span th:text="${today}"></span></p>
 
                 <div class="container">
                     <div>
@@ -190,13 +178,9 @@
                             <br/>
                             <div class="signature-line"></div>
                         </div>
-                        <div class="signature right">
-                            <p>A/O Secretária/o,</p>
-                            <br/>
-                            <div class="signature-line"></div>
-                        </div>
                     </div>
                 </div>
+
             </div>
         </main>
 

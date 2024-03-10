@@ -1,5 +1,6 @@
 package pt.iscte.condo.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @PostMapping
-    public void createMeeting(@RequestBody CreateMeetingRequest request) {
+    public void createMeeting(@RequestBody @Valid CreateMeetingRequest request) throws Exception {
         meetingService.createMeeting(request);
     }
 

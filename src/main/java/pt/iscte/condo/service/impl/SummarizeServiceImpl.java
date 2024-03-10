@@ -20,6 +20,7 @@ import pt.iscte.condo.utils.DocumentUtils;
 import pt.iscte.condo.utils.UserUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -52,6 +53,7 @@ public class SummarizeServiceImpl implements SummarizeService {
         Condominium condominium = user.getCondominium();
         List<Topic> topics = summarizeMapper.mapTopicEntityList2Topic(meetingTopics);
         List<FractionInfo> fractionInfoList = summarizeMapper.mapApartmentEntity2Apartment(condominium.getApartments());
+        Map<String, byte[]> meetingAttachments = mapAttachments(meeting.getAttachments());
 
         validateDocument(document);
 
@@ -61,7 +63,7 @@ public class SummarizeServiceImpl implements SummarizeService {
         Map<String,String> meetingTopicsDescription = transcriptService.processTranscript(getTranscript(text, condominium), meetingTopics);
         // todo topic entity doesnt have stored ai answers
         try {
-            byte[] pdfData = pdfService.generateMinute(topics, fractionInfoList, meetingTopicsDescription, condominium, meeting);
+            byte[] pdfData = pdfService.generateMinute(topics, fractionInfoList, meetingTopicsDescription, condominium, meeting, meetingAttachments);
             saveDocument(pdfData, user, user.getCondominium());
         } catch (Exception e) {
             throw new RuntimeException("PDF File generation failed", e.getCause());
@@ -84,10 +86,14 @@ public class SummarizeServiceImpl implements SummarizeService {
 
     }
 
-    private List<MeetingTopic> getMeetingTopics(Integer meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new IllegalArgumentException("Meeting not found"));
-        return meeting.getTopics(); //todo check if it's null
+    private Map<String, byte[]> mapAttachments(List<MeetingAttachment> attachments) {
+        Map<String, byte[]> fileMap = new HashMap<>();
+        if (attachments != null) {
+            for (MeetingAttachment attachment : attachments) {
+                fileMap.put(attachment.getName(), attachment.getFileData());
+            }
+        }
+        return fileMap;
     }
 
     private void validateDocument(Document document) {

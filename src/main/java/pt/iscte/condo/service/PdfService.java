@@ -10,6 +10,11 @@ import java.util.Map;
 
 public interface PdfService {
 
-    byte[] generateMinute(List<Topic> topics, List<FractionInfo> fractionInfos, Map<String, String> aiSummarizedTopics, Condominium condominium, Meeting meeting) throws Exception;
+    byte[] generateMinute(List<Topic> topics, List<FractionInfo> fractionInfos,
+                          Map<String, String> aiSummarizedTopics, Condominium condominium,
+                          Meeting meeting, Map<String, byte[]> attachments) throws Exception;
+
+    byte[] generateMeetingNotice(Condominium condominium, Meeting meeting, List<Topic> topics,
+                                 Map<String, byte[]> attachments) throws Exception;
 
 }
